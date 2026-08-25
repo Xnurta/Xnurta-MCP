@@ -2,11 +2,11 @@
 
 Bring Xnurta's advertising capabilities into your own AI agent (Claude, ChatGPT, and more) and make your data part of your workflow — query data, run analyses, and calculate true profitability in plain language, combining your own costs, margins, and goals. After authorization, there is no need to repeatedly sign in to the platform, export spreadsheets, or switch between systems.
 
-The current Xnurta MCP v1.2.0 supports data queries and creating, editing, and deleting AI managed groups, including hourly (AMS) data, managed-group schedules, automation-rule reads, and applying platform templates. Direct campaign management is not yet available.
+The current Xnurta MCP v1.1.1 supports data queries and creating, editing, and deleting AI managed groups, including hourly (AMS) data, managed-group schedules, automation-rule reads, and applying platform templates. Direct campaign management is not yet available.
 
 ---
 
-## What v1.2.0 can do for you
+## What v1.1.1 can do for you
 
 - **Query your data in natural language** — ask "rank last week's campaigns by ACOS" or "show this product line's TACOS trend over the past 8 weeks" right inside your AI assistant. After authorization, there is no need to repeatedly sign in or export data.
 - **Calculate true profitability with your own data** — hand your costs / margins / goals to the AI and let it pull ad spend: "based on real margins, which campaigns are losing money — cut or scale?" Questions that require combining ad data with your own business data are exactly what the platform alone can't answer.

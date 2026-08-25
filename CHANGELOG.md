@@ -2,7 +2,7 @@
 
 This file tracks version changes for Xnurta MCP Skills and the accompanying documentation.
 
-## [1.2.0] - 2026-08-25
+## [1.1.1] - 2026-08-25
 
 Based on the online v1.1.0 release as a single version baseline, this release aligns the Skills with the MCP Server's current `pre` behavior and adds hourly (AMS) data, managed-group schedules, automation-rule reads, and managed-group templates.
 
@@ -35,14 +35,14 @@ Based on the online v1.1.0 release as a single version baseline, this release al
 ### Documentation consistency
 
 - `skills/README.md` version table brought up to each `SKILL.md`'s actual version (previously four entries behind), with real scope names in the Scope column.
-- `skills/manifest.json`: `release` → `v1.2.0`, `updated_at` → `2026-08-25`; fields normalized to `mcp_tools` (array) and `scopes` (array), now filled in for all 10 skills.
+- `skills/manifest.json`: `release` → `v1.1.1`, `updated_at` → `2026-08-25`; fields normalized to `mcp_tools` (array) and `scopes` (array), now filled in for all 10 skills.
 - All Skill versions now live in frontmatter `metadata.version`, and installation/version-check guidance reads that field so every Skill passes the Codex Skill frontmatter validator.
 - The four optional skills' Version History gained `1.0.0` and `1.0.1` entries (previously stopping at v0.x), and references to a design draft that doesn't ship with the skills were removed.
 - The read-side `platform-notes.md` self-description was made generic; all 7 copies are now byte-identical (it previously claimed only the 3 read skills carried one).
 - Self-check fixes clarify effective-config read-back verification, read-only Rule-mode boundaries, schedule response envelopes, complete hourly chunking versus sampling, Vendor inference limits, and delete enum references.
 - Release versions use the online `main` manifest as their baseline; multiple local fixes in one unreleased batch are consolidated into one version bump.
 
-### Changed (previously unreleased entries, shipping with 1.2.0)
+### Changed (previously unreleased entries, shipping with 1.1.1)
 
 - **xnurta-query-entity-metadata** `1.1.0` → `1.1.1`.
 - **xnurta-query-operation-log** `1.1.0` → `1.1.1`.

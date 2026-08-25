@@ -330,7 +330,7 @@ It follows the Xnurta platform's update cadence — not second-level real-time.
 The available stores depend on your Xnurta account permissions and the scope granted through OAuth or the MCP Token. The final visible scope never exceeds your account permissions.
 
 **Q: Which write operations does this version support?**
-v1.2.0 supports creating, editing, and deleting AI managed groups, including supported optimization targets, budgets, campaign membership, and AI action-space settings, plus applying platform templates and maintaining SP/SB managed-group schedules. Writes directly modify live configuration and take effect immediately, so confirm the target and exact change first. Direct campaign creation, editing, and deletion are not yet supported.
+v1.1.1 supports creating, editing, and deleting AI managed groups, including supported optimization targets, budgets, campaign membership, and AI action-space settings, plus applying platform templates and maintaining SP/SB managed-group schedules. Writes directly modify live configuration and take effect immediately, so confirm the target and exact change first. Direct campaign creation, editing, and deletion are not yet supported.
 
 **Q: Which managed-group settings are not supported yet?**
 Word-list settings are not supported. Managed-group scheduling is supported for reads and writes (SP/SB only - there is no SD schedule tool). Templates can be read and applied to a group, but creating or editing a template is platform-only. RBA rule configuration can now be read (conditions, actions, periods, hour matrices) but cannot be modified through MCP. Action space can be switched from RBA to AI, but still not from AI to RBA.
