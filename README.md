@@ -2,11 +2,11 @@
 
 Bring Xnurta's advertising capabilities into your own AI agent (Claude, ChatGPT, and more) and make your data part of your workflow — query data, run analyses, and calculate true profitability in plain language, combining your own costs, margins, and goals. After authorization, there is no need to repeatedly sign in to the platform, export spreadsheets, or switch between systems.
 
-The current version v1.1.0 supports data queries and creating, editing, and deleting AI managed groups. Direct campaign management is not yet available.
+The current Xnurta MCP v1.2.0 supports data queries and creating, editing, and deleting AI managed groups, including hourly (AMS) data, managed-group schedules, automation-rule reads, and applying platform templates. Direct campaign management is not yet available.
 
 ---
 
-## What v1.1.0 can do for you
+## What v1.2.0 can do for you
 
 - **Query your data in natural language** — ask "rank last week's campaigns by ACOS" or "show this product line's TACOS trend over the past 8 weeks" right inside your AI assistant. After authorization, there is no need to repeatedly sign in or export data.
 - **Calculate true profitability with your own data** — hand your costs / margins / goals to the AI and let it pull ad spend: "based on real margins, which campaigns are losing money — cut or scale?" Questions that require combining ad data with your own business data are exactly what the platform alone can't answer.
@@ -71,7 +71,7 @@ Connecting the server is only step one. Complete all of the following:
 
 1. Add the MCP server (`https://mcp.xnurta.com/mcp`, Streamable HTTP). Check which authorization methods the client supports, explain when OAuth and MCP Token are appropriate, and ask the user to confirm before configuring it. If OAuth is selected, follow the MCP Authorization specification and validate discovery metadata, endpoints, and every required request field before sending any OAuth request; never omit or guess protocol parameters.
 2. Call `get_user_authorized_context` to verify. A list of authorized stores means success.
-3. Read `skills/manifest.json` and compare each installed Skill's local `version` in its `SKILL.md` frontmatter with the matching manifest version. If a local version is lower, list the outdated Skills and tell the user to update them. Do not report an update when versions match, the Skill is not installed, or its local version cannot be read.
+3. Read `skills/manifest.json` and compare each installed Skill's local `metadata.version` in its `SKILL.md` frontmatter with the matching manifest version. If a local version is lower, list the outdated Skills and tell the user to update them. Do not report an update when versions match, the Skill is not installed, or its local version cannot be read.
 4. Install the 6 required Skills: the 3 query Skills plus `xnurta-create-ai-group`, `xnurta-edit-ai-group`, and `xnurta-delete-ai-group`. Install them directly without asking the user.
 5. Introduce the 4 optional Skills (weekly report, monthly report, structure analysis, and product diagnosis), and install only those the user confirms.
 
@@ -93,11 +93,11 @@ MCP Tools determine *what data the AI can get*; Skills determine *how well the A
 
 | Skill | MCP Tool | Purpose |
 |-------|----------|---------|
-| [xnurta-query-ads-performance](skills/xnurta-query-ads-performance/) | `get_ads_perf` | Query ad performance metrics: spend, ACOS, ROAS, trends, rankings, period comparison |
-| [xnurta-query-entity-metadata](skills/xnurta-query-entity-metadata/) | `get_entity_metadata` | Query entity configuration: campaign / ad group / target / ASIN / managed group names, status, settings |
+| [xnurta-query-ads-performance](skills/xnurta-query-ads-performance/) | `get_ads_perf` | Query ad performance metrics: spend, ACOS, ROAS, trends, rankings, period comparison, plus hourly (AMS) and keyword × placement views |
+| [xnurta-query-entity-metadata](skills/xnurta-query-entity-metadata/) | `get_entity_metadata` | Query entity configuration: campaign / ad group / target / ASIN / managed group names, status, settings, plus managed-group schedules, enabled campaign automation-rule types, and rule-mode rule configuration |
 | [xnurta-query-operation-log](skills/xnurta-query-operation-log/) | `get_operation_log` | Query operation logs: human and AI bid, budget, and status changes |
-| [xnurta-create-ai-group](skills/xnurta-create-ai-group/) | `create_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` | Create SP, SB, or SD AI managed groups |
-| [xnurta-edit-ai-group](skills/xnurta-edit-ai-group/) | `edit_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` | Edit one or multiple AI managed groups |
+| [xnurta-create-ai-group](skills/xnurta-create-ai-group/) | `create_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` | Create SP, SB, or SD AI managed groups, optionally from a platform template and with an SP/SB schedule |
+| [xnurta-edit-ai-group](skills/xnurta-edit-ai-group/) | `edit_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` | Edit one or multiple AI managed groups, apply templates, manage SP/SB schedules |
 | [xnurta-delete-ai-group](skills/xnurta-delete-ai-group/) | `delete_ai_managed_group` | Delete a managed group and release or migrate its campaigns |
 
 **Optional (4)** — advanced analysis scenarios; add as needed once the required Skills are installed:
@@ -106,7 +106,7 @@ MCP Tools determine *what data the AI can get*; Skills determine *how well the A
 |-------|---------|
 | [xnurta-weekly-ads-report](skills/xnurta-weekly-ads-report/) | Weekly ads report: KPI card with WoW comparison, 7-day trend, anomalies, top movers, next-week actions |
 | [xnurta-monthly-ads-report](skills/xnurta-monthly-ads-report/) | Monthly ads report: full-month KPIs (MoM + YoY), structural breakdown, product and keyword analysis |
-| [xnurta-ads-structure-analysis](skills/xnurta-ads-structure-analysis/) | Structure analysis: locate structural mismatches across campaign type / marketplace / portfolio dimensions |
+| [xnurta-ads-structure-analysis](skills/xnurta-ads-structure-analysis/) | Structure analysis: locate structural mismatches across campaign type / marketplace / portfolio / weekday / hour-of-day dimensions |
 | [xnurta-product-diagnosis](skills/xnurta-product-diagnosis/) | Product diagnosis: ASIN health tiering, variant comparison, keep/optimize/cut recommendations |
 
 **How to install** (either way):
@@ -136,10 +136,10 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 
 - **Writes take effect immediately**: creating, editing, or deleting a managed group directly changes live configuration. Grant write or delete access only to trusted users; verify the profile, object, and exact change, obtain explicit confirmation, and read back the result.
 - **Write scope**: the current version manages AI managed groups only. It does not directly create, edit, or delete campaigns.
-- **Not supported yet**: managed-group scheduling, template-based setup, and word-list settings. RBA configuration cannot be read or edited. Action space can be switched from RBA to AI, but not from AI to RBA.
+- **Not supported yet**: word-list settings; creating or editing templates (they can be read and applied); modifying RBA rule configuration (**reading it is supported**). Managed-group scheduling is now supported for SP/SB only. Action space can be switched from RBA to AI, but still not from AI to RBA.
 - **Scope**: the stores you can query match your Xnurta account (main / sub-account) permissions.
 - **History**: roughly the most recent 15 months of performance data and logs.
-- **Not real-time**: data freshness follows the Xnurta platform's update cadence; performance data granularity is daily.
+- **Not real-time**: data freshness follows the Xnurta platform's update cadence; performance data is daily by default, with hourly granularity available for supported AMS queries.
 
 ---
 

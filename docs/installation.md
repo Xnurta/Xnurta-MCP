@@ -269,7 +269,7 @@ After configuring OAuth or an MCP Token, ask your assistant to call `get_user_au
 
 Skills live in this repo's [`skills/`](../skills/) directory, in two tiers:
 
-> **To AI agents:** before installing or updating, read [`skills/manifest.json`](../skills/manifest.json) and compare it with the `version` in each installed Skill's local `SKILL.md`. If a local version is lower, list the outdated Skills and tell the user to update them. Do not repeat this check during normal queries.
+> **To AI agents:** before installing or updating, read [`skills/manifest.json`](../skills/manifest.json) and compare it with the `metadata.version` in each installed Skill's local `SKILL.md`. If a local version is lower, list the outdated Skills and tell the user to update them. Do not repeat this check during normal queries.
 
 **Required (6)** — covering core queries and managed-group management:
 
@@ -321,7 +321,7 @@ Four moves: 1) ask the assistant to list your authorized stores → 2) pick a st
 First confirm which authorization method you are using. OAuth users should sign in again and confirm that access has not been revoked. MCP Token users should check whether the Token is complete, active, unexpired, and authorized for the required permissions. OpenClaw users on old versions should upgrade the client first.
 
 **Q: How far back can I query?**
-Roughly the most recent 15 months of performance data and operation logs; performance data granularity is daily.
+Roughly the most recent 15 months of performance data and operation logs. Performance data is daily by default; campaign-level hourly (AMS) data is also available, along with an hourly keyword x placement view - both of those hourly queries are capped at a 7-day span.
 
 **Q: Is the data real-time?**
 It follows the Xnurta platform's update cadence — not second-level real-time.
@@ -330,7 +330,7 @@ It follows the Xnurta platform's update cadence — not second-level real-time.
 The available stores depend on your Xnurta account permissions and the scope granted through OAuth or the MCP Token. The final visible scope never exceeds your account permissions.
 
 **Q: Which write operations does this version support?**
-v1.1.0 supports creating, editing, and deleting AI managed groups, including supported optimization targets, budgets, campaign membership, and AI action-space settings. Writes directly modify live configuration and take effect immediately, so confirm the target and exact change first. Direct campaign creation, editing, and deletion are not yet supported.
+v1.2.0 supports creating, editing, and deleting AI managed groups, including supported optimization targets, budgets, campaign membership, and AI action-space settings, plus applying platform templates and maintaining SP/SB managed-group schedules. Writes directly modify live configuration and take effect immediately, so confirm the target and exact change first. Direct campaign creation, editing, and deletion are not yet supported.
 
 **Q: Which managed-group settings are not supported yet?**
-Managed-group scheduling, template-based setup, and word-list settings are not supported. RBA configuration cannot be read or edited. Action space can be switched from RBA to AI, but not from AI to RBA.
+Word-list settings are not supported. Managed-group scheduling is supported for reads and writes (SP/SB only - there is no SD schedule tool). Templates can be read and applied to a group, but creating or editing a template is platform-only. RBA rule configuration can now be read (conditions, actions, periods, hour matrices) but cannot be modified through MCP. Action space can be switched from RBA to AI, but still not from AI to RBA.
