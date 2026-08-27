@@ -2,6 +2,19 @@
 
 This file tracks version changes for Xnurta MCP Skills and the accompanying documentation.
 
+## [Unreleased]
+
+### Added
+
+- **Vendor ASIN metric semantics** (`xnurta-query-ads-performance` `1.1.0` → `1.2.0`, ticket BC-9770): `TotalSalesAmount`/`OrderCount`/`UnitCount`/`TACOS` on Vendor rows use the shipped basis (not ordered), unified with Seller rows so they can be summed directly in a mixed query. Documented the availability split for `OrderedRevenue`/`OrderedTACOS` (only under `distributorView_=MANUFACTURING`) vs `ShippedRevenue`/`ShippedTACOS` (both views). Documented Vendor dimension auto-locking: the underlying table has up to 4 rows per `(profileId, date, ASIN)` (`distributorView_` × `sellingProgram_`), and querying without locking them inflates ad metrics and `GlanceViews` by up to 4×; the server defaults to `MANUFACTURING` + `RETAIL` and reports what it defaulted via `meta.appliedDefaults`. Added guidance for mixed Seller+Vendor queries: unified metrics aggregate directly, Vendor-specific metrics need grouping by `storeType_`.
+
+### Fixed
+
+- **Managed-group full-configuration explanation** (`xnurta-query-entity-metadata`, version to be bumped at release time): added a customer-display layer — page-name labels in the user's language, backend field names and rule numbers hidden by default; brand/non-brand/competitor mode presented separately from the AI Action Space; distinguished the objective's UI category from its selected option, with Chinese `targetType=2` rendered as "保持订单稳定" rather than "控制成本" or an English enum label; `aiPersonality` shown as the raw `1`-`5` number, never replaced or appended with a text label such as "激进"; clarified that `aiAutomation.*.status` is a mode discriminator (AI vs Rule), not an enabled/disabled flag; filled in the `isSelf=1/2/3` scope and lookback-window semantics for rules 4/5; folded the performance-based-budget upper/lower bounds back into their parent strategy and grouped "custom settings" vs "frequency settings", explaining that the configured budget takes effect at the store's local midnight the next day; added the conversion from budget dayparting's "reduction percentage" to "effective budget as a percentage of the current day's budget", and stopped mislabeling the budget cap as the actual pacing ratio. Also corrected an incorrect `select` statement in the full-read example.
+- **Hourly (AMS) timezone confirmed** (`xnurta-query-ads-performance`, same version range as above): `date`/`hour` confirmed to be in the profile's local IANA timezone (not UTC); data latency is roughly 2 hours (much faster than the daily pipeline's T+2).
+- **No verified product-identity join path for hourly queries yet**: adding `productAd.asin_`/`productAd.sku_` to `select` fails with a `business_error` (cannot join the CTE); `factEntity: productAd` itself rejects `timeGranularity: hourly`. Only the `productAd.*` combination was tested — whether `asin.*` or a daily `campaign`+`productAd` combination fails the same way is untested; don't extrapolate.
+- **15-month lookback boundary is inclusive**: verified that a `dateStart` exactly at the 15-month-ago cutoff succeeds; only a date strictly earlier than that errors (`start.isBefore(earliest)` semantics). The docs previously said the boundary date itself would fail.
+
 ## [1.1.1] - 2026-08-25
 
 Based on the online v1.1.0 release as a single version baseline, this release aligns the Skills with the MCP Server's current `pre` behavior and adds hourly (AMS) data, managed-group schedules, automation-rule reads, and managed-group templates.

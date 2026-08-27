@@ -1,17 +1,17 @@
 {
   "$schema_note": "Machine-readable manifest of Xnurta MCP official skills. Version fields must stay in sync with each skill's SKILL.md frontmatter (`metadata.version`).",
   "manifest_version": 1,
-  "updated_at": "2026-08-25",
+  "updated_at": "2026-08-27",
   "release": "v1.1.1",
   "skills": [
     {
       "name": "xnurta-query-ads-performance",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "required": true,
       "mcp_tools": ["get_ads_perf"],
       "scopes": ["amazon_sa_performance_data:read"],
       "path": "xnurta-query-ads-performance",
-      "description": "Query advertising performance metrics: spend, clicks, sales, ACOS, ROAS, trends, rankings, period comparison, plus hourly (AMS) and keyword-placement breakdowns."
+      "description": "Query advertising performance metrics: spend, clicks, sales, ACOS, ROAS, trends, rankings, period comparison, plus hourly (AMS), keyword-placement, and Vendor ASIN (shipped/ordered, distributorView/sellingProgram) breakdowns."
     },
     {
       "name": "xnurta-query-entity-metadata",
@@ -20,7 +20,7 @@
       "mcp_tools": ["get_entity_metadata"],
       "scopes": ["amazon_sa_ads_configuration:read"],
       "path": "xnurta-query-entity-metadata",
-      "description": "Query advertising entity metadata: campaign / ad group / target / ASIN / AI group configuration, managed-group schedules, enabled campaign automation-rule types, and rule-mode rule configuration."
+      "description": "Query advertising entity metadata: campaign / ad group / target / ASIN / AI group configuration, managed-group schedules, campaign enabled-rule types, and managed-group Rule-mode configuration."
     },
     {
       "name": "xnurta-query-operation-log",

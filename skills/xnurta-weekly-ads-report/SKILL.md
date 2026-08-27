@@ -20,7 +20,7 @@ This skill does **not** map to a single MCP tool of its own — it orchestrates 
 - `get_operation_log` → [xnurta-query-operation-log](../xnurta-query-operation-log/SKILL.md)
 - `get_entity_metadata` → [xnurta-query-entity-metadata](../xnurta-query-entity-metadata/SKILL.md)
 
-> **Dependency — install these three base skills alongside this one:** `xnurta-query-ads-performance`, `xnurta-query-entity-metadata`, `xnurta-query-operation-log`. Skills install as sibling directories under `.claude/skills/<name>/`, which is exactly what the `../query-.../…` links above (and elsewhere in this doc) resolve against — if a base skill isn't installed, those links won't resolve and this skill can't run. Install all three first.
+> **Dependency — install these three base skills alongside this one:** `xnurta-query-ads-performance`, `xnurta-query-entity-metadata`, `xnurta-query-operation-log`. Skills install as sibling directories under your current agent's skills root (`.claude/skills/<name>/` for Claude Code; the equivalent root for other agents — see the [supported-agents table](../../README.md)), which is exactly what the `../query-.../…` links above (and elsewhere in this doc) resolve against — if a base skill isn't installed there, those links won't resolve and this skill can't run. Install all three first.
 
 **Read those three SKILL.md files first** (parameter formats, field-naming rules, the Ratio Metric Display Rule) plus [`references/platform-notes.md`](references/platform-notes.md) (auth flow, error handling, pagination, date-range limits, currency rules — shared by all three underlying tools). This document only covers logic specific to the weekly-report use case; it doesn't repeat what the three base skills already document.
 

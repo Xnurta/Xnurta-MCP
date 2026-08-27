@@ -2,7 +2,7 @@
 
 Bring Xnurta's advertising capabilities into your own AI agent (Claude, ChatGPT, and more) and make your data part of your workflow — query data, run analyses, and calculate true profitability in plain language, combining your own costs, margins, and goals. After authorization, there is no need to repeatedly sign in to the platform, export spreadsheets, or switch between systems.
 
-The current Xnurta MCP v1.1.1 supports data queries and creating, editing, and deleting AI managed groups, including hourly (AMS) data, managed-group schedules, automation-rule reads, and applying platform templates. Direct campaign management is not yet available.
+The current Xnurta MCP v1.1.1 supports data queries and creating, editing, and deleting AI managed groups, including hourly (AMS) data, Vendor ASIN metric semantics, managed-group schedules, automation-rule reads, and applying platform templates. Direct campaign management is not yet available.
 
 ---
 
