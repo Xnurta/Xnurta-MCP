@@ -9,7 +9,7 @@ description: >-
   "ASIN health check". Not for account-wide structural share analysis (use xnurta-ads-structure-analysis)
   or periodic WoW/MoM recaps (use xnurta-weekly-ads-report / xnurta-monthly-ads-report).
 metadata:
-  version: 1.0.1
+  version: 1.0.2
 ---
 
 # Product Diagnosis
