@@ -54,7 +54,7 @@ In any client whose AI can configure things itself (Claude, ChatGPT Codex, Cherr
 
 ```text
 Please read the following GitHub repository and follow its instructions to configure Xnurta MCP and install the Skills:
-https://github.com/Xnurta/MCP
+https://github.com/Xnurta/Xnurta-MCP
 
 Xnurta MCP supports both OAuth and MCP Token authentication.
 Please check which authorization methods the current client supports, briefly explain when each method is appropriate, and ask me to confirm which method to use before starting authorization.
@@ -77,7 +77,7 @@ Connecting the server is only step one. Complete all of the following:
 
 Write the MCP configuration to the correct file for the current client. Config file names vary (`mcp.json`, `.mcp.json`, `mcp_config.json`, `config.toml`, `config.yaml`, etc.); do not confuse them.
 
-Machine-readable Skills list: `https://raw.githubusercontent.com/Xnurta/MCP/main/skills/manifest.json`. Stopping after connection verification means setup is incomplete.
+Machine-readable Skills list: `https://raw.githubusercontent.com/Xnurta/Xnurta-MCP/main/skills/manifest.json`. Stopping after connection verification means setup is incomplete.
 
 </details>
 
@@ -153,7 +153,7 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 
 1. Switch to the **Code** tab.
 2. Select **+ → Plugins → Add plugin** next to the prompt box to open the plugin browser.
-3. Under **Marketplaces**, add a repository and enter `Xnurta/MCP`.
+3. Under **Marketplaces**, add a repository and enter `Xnurta/Xnurta-MCP`.
 4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 10 Skills together.
 
 > Claude Code Desktop does not support the `/plugin` command. `/plugin` is for Claude Code CLI only; use the desktop plugin browser instead.
@@ -162,7 +162,7 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 
 1. Select **Plugins** in the left sidebar.
 2. Select **Add → Add a marketplace** in the upper-right corner.
-3. Enter `Xnurta/MCP` and add the marketplace.
+3. Enter `Xnurta/Xnurta-MCP` and add the marketplace.
 4. In **Plugins**, find the marketplace you added and install **Xnurta MCP**.
 5. Start a new Codex task. The MCP server and all 10 Skills will be available in the new task.
 
@@ -175,14 +175,14 @@ Desktop UI references: [Claude Code Desktop](https://code.claude.com/docs/en/des
 #### Claude Code CLI
 
 ```text
-/plugin marketplace add Xnurta/MCP
+/plugin marketplace add Xnurta/Xnurta-MCP
 /plugin install xnurta-mcp@xnurta
 ```
 
 #### Codex CLI
 
 ```bash
-codex plugin marketplace add Xnurta/MCP
+codex plugin marketplace add Xnurta/Xnurta-MCP
 codex
 ```
 

@@ -32,7 +32,7 @@ Advanced analyses built on the required query Skills — add as needed once thos
 - **For programs**: [`manifest.json`](manifest.json) is the machine-readable version list (each entry carries `name`, `version`, `required`, `mcp_tools` (array), `scopes` (array), `path`, `description`), available at a stable address:
 
   ```
-  https://raw.githubusercontent.com/Xnurta/MCP/main/skills/manifest.json
+  https://raw.githubusercontent.com/Xnurta/Xnurta-MCP/main/skills/manifest.json
   ```
 
 - **For humans**: each Skill's version is in the `metadata.version` field of its `SKILL.md` frontmatter; overall history is in [CHANGELOG.md](../CHANGELOG.md).

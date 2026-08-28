@@ -5,8 +5,8 @@
   "author": {
     "name": "Xnurta"
   },
-  "homepage": "https://github.com/Xnurta/MCP",
-  "repository": "https://github.com/Xnurta/MCP",
+  "homepage": "https://github.com/Xnurta/Xnurta-MCP",
+  "repository": "https://github.com/Xnurta/Xnurta-MCP",
   "license": "MIT",
   "keywords": [
     "amazon-ads",
@@ -37,7 +37,7 @@
       "Analytics",
       "Write"
     ],
-    "websiteURL": "https://github.com/Xnurta/MCP",
+    "websiteURL": "https://github.com/Xnurta/Xnurta-MCP",
     "defaultPrompt": [
       "Show my stores and summarize yesterday's ad performance.",
       "Rank last week's campaigns by spend and include ACOS.",
