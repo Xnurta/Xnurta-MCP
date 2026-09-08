@@ -4,8 +4,11 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-08
+
 ### Added
 
+- **Live ad-entity editing**: added the required `xnurta-edit-ads` `1.0.0` Skill for `batch_update_ads` (`amazon_sa_campaign_edit:write`). It covers 18 campaign, keyword, target, promoted-product, negative-keyword, and negative-target routes; 9 protected routes use explicit two-phase confirmation. Writes affect live accounts immediately, validation is all-or-nothing, archived objects fail closed, and ambiguous downstream outcomes must not be reported as success.
 - **Vendor ASIN metric semantics** (`xnurta-query-ads-performance` `1.1.0` → `1.2.0`, ticket BC-9770): `TotalSalesAmount`/`OrderCount`/`UnitCount`/`TACOS` on Vendor rows use the shipped basis (not ordered), unified with Seller rows so they can be summed directly in a mixed query. Documented the availability split for `OrderedRevenue`/`OrderedTACOS` (only under `distributorView_=MANUFACTURING`) vs `ShippedRevenue`/`ShippedTACOS` (both views). Documented Vendor dimension auto-locking: the underlying table has up to 4 rows per `(profileId, date, ASIN)` (`distributorView_` × `sellingProgram_`), and querying without locking them inflates ad metrics and `GlanceViews` by up to 4×; the server defaults to `MANUFACTURING` + `RETAIL` and reports what it defaulted via `meta.appliedDefaults`. Added guidance for mixed Seller+Vendor queries: unified metrics aggregate directly, Vendor-specific metrics need grouping by `storeType_`.
 
 ### Fixed
