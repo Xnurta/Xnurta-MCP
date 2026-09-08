@@ -141,7 +141,7 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 
 - **Writes take effect immediately**: managed-group and ad-entity writes directly change live configuration. Grant write or delete access only to trusted users; verify the profile, object, and exact change, obtain explicit confirmation where required, and read back the result.
 - **Write scope**: the current version manages AI managed groups and edits supported ad entities. Campaign budget, status, and SP bidding strategy can be edited, including archiving through a status update; campaign creation and a separate delete operation are not supported.
-- **Not supported yet**: word-list settings; creating or editing templates (they can be read and applied); modifying RBA rule configuration (**reading it is supported**). Managed-group scheduling is now supported for SP/SB only. Action space can be switched from RBA to AI, but still not from AI to RBA.
+- **Not supported yet**: word-list settings; creating or editing reusable template definitions; modifying RBA rule configuration (**reading it is supported**). Existing templates can be read and used to create or edit managed groups. Managed-group scheduling is now supported for SP/SB only. Action space can be switched from RBA to AI, but still not from AI to RBA.
 - **Scope**: the stores you can query match your Xnurta account (main / sub-account) permissions.
 - **History**: roughly the most recent 15 months of performance data and logs.
 - **Not real-time**: data freshness follows the Xnurta platform's update cadence; performance data is daily by default, with hourly granularity available for supported AMS queries.
