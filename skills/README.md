@@ -12,10 +12,10 @@ Official Skills for use with Xnurta MCP, in two tiers:
 | [xnurta-query-ads-performance](xnurta-query-ads-performance/) | 1.3.0 | `get_ads_perf` | `amazon_sa_performance_data:read` | Query ad performance metrics: spend, ACOS, ROAS, trends, rankings, period comparison, hourly (AMS) and keyword × placement breakdowns, plus Vendor ASIN metric semantics (shipped/ordered, distributorView/sellingProgram) |
 | [xnurta-query-entity-metadata](xnurta-query-entity-metadata/) | 1.3.0 | `get_entity_metadata` | `amazon_sa_ads_configuration:read` | Query entity configuration: campaign / ad group / target / ASIN / managed group names, status, settings, plus managed-group schedules, enabled campaign automation-rule types, and rule-mode rule configuration |
 | [xnurta-query-operation-log](xnurta-query-operation-log/) | 1.3.0 | `get_operation_log` | `amazon_sa_ads_logs:read` | Query operation logs: human and AI bid, budget, and status changes (including the timestamp timezone rules) |
-| [xnurta-create-ai-group](xnurta-create-ai-group/) | 1.1.1 | `create_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` | `amazon_sa_managed_group:write` | Create SP, SB, or SD AI managed groups, optionally from a platform template and with an SP/SB schedule |
-| [xnurta-edit-ai-group](xnurta-edit-ai-group/) | 1.1.2 | `edit_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` | `amazon_sa_managed_group:write` | Edit one or multiple AI managed groups, apply templates, manage SP/SB schedules |
-| [xnurta-delete-ai-group](xnurta-delete-ai-group/) | 1.0.4 | `delete_ai_managed_group` | `amazon_sa_managed_group_delete:write` | Delete a managed group and release or migrate its campaigns |
-| [xnurta-edit-ads](xnurta-edit-ads/) | 1.0.0 | `batch_update_ads` | `amazon_sa_campaign_edit:write` | Edit live ad entities in bulk: campaign budget / state / bidding strategy, keyword and target status and bids, promoted products, negative keywords and negative targets (18 routes, 9 need two-phase confirmation) |
+| [xnurta-create-ai-group](xnurta-create-ai-group/) | 1.1.2 | `create_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` | `amazon_sa_managed_group:write` | Create SP, SB, or SD AI managed groups, optionally from a platform template and with an SP/SB schedule |
+| [xnurta-edit-ai-group](xnurta-edit-ai-group/) | 1.1.3 | `edit_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` | `amazon_sa_managed_group:write` | Edit one or multiple AI managed groups, apply templates, manage SP/SB schedules |
+| [xnurta-delete-ai-group](xnurta-delete-ai-group/) | 1.0.5 | `delete_ai_managed_group` | `amazon_sa_managed_group_delete:write` | Delete a managed group and release or migrate its campaigns |
+| [xnurta-edit-ads](xnurta-edit-ads/) | 1.0.1 | `batch_update_ads` | `amazon_sa_campaign_edit:write` | Edit live ad entities in bulk: campaign budget / state / bidding strategy, keyword and target status and bids, promoted products, negative keywords and negative targets (18 routes, 9 need two-phase confirmation) |
 
 ## Optional Skills
 
@@ -23,10 +23,10 @@ Advanced analyses built on the required query Skills — add as needed once thos
 
 | Skill | Version | Purpose |
 |-------|---------|---------|
-| [xnurta-weekly-ads-report](xnurta-weekly-ads-report/) | 1.0.3 | Weekly ads report: KPI card with WoW comparison, 7-day trend, anomaly summary, top movers, next-week actions |
-| [xnurta-monthly-ads-report](xnurta-monthly-ads-report/) | 1.0.3 | Monthly ads report: full-month KPIs (MoM + YoY), structural breakdown, product and keyword analysis, next-month recommendations |
-| [xnurta-ads-structure-analysis](xnurta-ads-structure-analysis/) | 1.0.3 | Structure analysis: break down spend and efficiency by campaign type / marketplace / portfolio / weekday / hour-of-day and locate structural mismatches |
-| [xnurta-product-diagnosis](xnurta-product-diagnosis/) | 1.0.3 | Product diagnosis: ASIN health tiering, variant comparison, diagnostic cards for underperformers, keep/optimize/cut recommendations |
+| [xnurta-weekly-ads-report](xnurta-weekly-ads-report/) | 1.0.4 | Weekly ads report: KPI card with WoW comparison, 7-day trend, anomaly summary, top movers, next-week actions |
+| [xnurta-monthly-ads-report](xnurta-monthly-ads-report/) | 1.0.4 | Monthly ads report: full-month KPIs (MoM + YoY), structural breakdown, product and keyword analysis, next-month recommendations |
+| [xnurta-ads-structure-analysis](xnurta-ads-structure-analysis/) | 1.0.4 | Structure analysis: break down spend and efficiency by campaign type / marketplace / portfolio / weekday / hour-of-day and locate structural mismatches |
+| [xnurta-product-diagnosis](xnurta-product-diagnosis/) | 1.0.4 | Product diagnosis: ASIN health tiering, variant comparison, diagnostic cards for underperformers, keep/optimize/cut recommendations |
 
 ## Versions
 
