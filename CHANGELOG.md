@@ -4,6 +4,10 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
 
 ## [Unreleased]
 
+### Fixed
+
+- **`parentAsinFbaQunatity_` -> `parentAsinFbaQuantity_`** in `xnurta-query-ads-performance`'s field reference. The child-ASIN spelling was corrected on 2026-09-09; the parent-ASIN field on the same line carried the same typo and was missed. `query-entity-metadata` spells both correctly.
+
 ## [1.2.1] - 2026-09-11
 
 ### Changed
