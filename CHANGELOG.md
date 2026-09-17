@@ -4,6 +4,20 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-17
+
+### Added
+
+- Added the required `xnurta-create-campaign` `1.0.0` Skill for `create_sp_sb_campaign` (`amazon_sa_campaign_create:write`). It currently creates SP campaigns with ad groups, advertised products, automatic/keyword/product targeting, negative targeting, placements, and optional AMC audiences. SB/SD campaign creation is not supported.
+- `xnurta-edit-ads` `1.0.1` -> `1.1.0`: added placement-bid and AMC audience-bid editing. The Skill now covers 20 operation routes, 11 of which use server-side two-phase confirmation.
+
+### Changed
+
+- Updated query Skills for the current tool contract, including campaign audiences, entity identifiers, mixed date shapes, currency handling, and aggregation semantics. `xnurta-query-ads-performance` and `xnurta-query-entity-metadata` are now `1.4.0`; `xnurta-query-operation-log` is now `1.3.1`.
+- Aligned managed-group Skills with current create, edit, and delete behavior: `xnurta-create-ai-group` is now `1.1.3`, `xnurta-edit-ai-group` is now `1.1.4`, and `xnurta-delete-ai-group` is now `1.0.6`.
+- Updated weekly report, monthly report, structure analysis, and product diagnosis Skills to `1.0.5`, using the current query boundaries and amount, date, and pagination rules.
+- Increased required Skills from 7 to 8; the plugin now contains 12 Skills in total.
+
 ### Fixed
 
 - **`parentAsinFbaQunatity_` -> `parentAsinFbaQuantity_`** in `xnurta-query-ads-performance`'s field reference. The child-ASIN spelling was corrected on 2026-09-09; the parent-ASIN field on the same line carried the same typo and was missed. `query-entity-metadata` spells both correctly.

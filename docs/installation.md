@@ -1,6 +1,6 @@
 # Xnurta MCP Installation Guide
 
-> **🤖 To AI Agents: if you are executing this guide on behalf of a user, "configure MCP" and "install Skills" are one single task.** After the MCP connection is verified, you MUST proceed to install the 7 required Skills (the [`skills/`](../skills/) directory — no need to ask the user), then introduce each of the 4 Skills marked optional in that directory and ask the user whether to install them. Configuring the connection without installing Skills means the task is incomplete.
+> **🤖 To AI Agents: if you are executing this guide on behalf of a user, "configure MCP" and "install Skills" are one single task.** After the MCP connection is verified, you MUST proceed to install the 8 required Skills (the [`skills/`](../skills/) directory — no need to ask the user), then introduce each of the 4 Skills marked optional in that directory and ask the user whether to install them. Configuring the connection without installing Skills means the task is incomplete.
 
 Four steps: **choose an authorization method → connect and verify MCP → install Skills → start using it**. About 5 minutes in total.
 
@@ -71,7 +71,7 @@ If your client doesn't let the AI configure itself, follow the manual setup belo
 1. Switch to the **Code** tab.
 2. Select **+ → Plugins → Add plugin** next to the prompt box to open the plugin browser.
 3. Under **Marketplaces**, add a repository and enter `Xnurta/Xnurta-MCP`.
-4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 11 Skills together.
+4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 12 Skills together.
 
 > **Note:** Claude Code Desktop does not support the `/plugin` command. It is available only in Claude Code CLI; use the desktop plugin browser instead.
 
@@ -81,7 +81,7 @@ If your client doesn't let the AI configure itself, follow the manual setup belo
 2. Select **Add → Add a marketplace** in the upper-right corner.
 3. Enter `Xnurta/Xnurta-MCP` and add the marketplace.
 4. In **Plugins**, find the marketplace you added and install **Xnurta MCP**.
-5. Start a new Codex task. The MCP server and all 11 Skills will be available in the new task.
+5. Start a new Codex task. The MCP server and all 12 Skills will be available in the new task.
 
 > **Note:** ChatGPT Desktop Codex does not support `/plugin` or `/plugins`. `/plugins` is available only in Codex CLI; use Plugins in the left sidebar of the desktop app.
 
@@ -105,11 +105,11 @@ codex
 
 In Codex CLI, enter `/plugins`, select **Xnurta MCP** from the `xnurta` marketplace, install it, and then start a new session.
 
-The plugin installs the MCP server and all 11 Skills together. The current Plugin configuration uses `XNURTA_TOKEN`; set the environment variable and start a new session. To use OAuth, follow the OAuth setup below.
+The plugin installs the MCP server and all 12 Skills together. The current Plugin configuration uses `XNURTA_TOKEN`; set the environment variable and start a new session. To use OAuth, follow the OAuth setup below.
 
 ### Option 3 · Manual setup
 
-> ⚠️ **Configured ≠ done**: after adding the MCP server, be sure to continue with [Step 3 · Install Skills](#step-3--install-skills). The 7 required Skills govern query accuracy and supported write behavior.
+> ⚠️ **Configured ≠ done**: after adding the MCP server, be sure to continue with [Step 3 · Install Skills](#step-3--install-skills). The 8 required Skills govern query accuracy and supported write behavior.
 
 > **🤖 To AI Agents:** The examples below cover multiple clients, each with a different config file name and format. Pick the one that matches the user's actual client and write to the correct file — do not confuse config files from different clients.
 
@@ -271,7 +271,7 @@ Skills live in this repo's [`skills/`](../skills/) directory, in two tiers:
 
 > **To AI agents:** before installing or updating, read [`skills/manifest.json`](../skills/manifest.json) and compare it with the `metadata.version` in each installed Skill's local `SKILL.md`. If a local version is lower, list the outdated Skills and tell the user to update them. Do not repeat this check during normal queries.
 
-**Required (7)** — covering core queries, managed-group management, and ad editing:
+**Required (8)** — covering core queries, managed-group management, SP campaign creation, and ad editing:
 
 - `xnurta-query-ads-performance` — ad performance queries
 - `xnurta-query-entity-metadata` — entity configuration queries
@@ -280,6 +280,7 @@ Skills live in this repo's [`skills/`](../skills/) directory, in two tiers:
 - `xnurta-edit-ai-group` — edit one or multiple AI managed groups
 - `xnurta-delete-ai-group` — delete AI managed groups
 - `xnurta-edit-ads` — edit supported live campaign, keyword, target, promoted-product, and negative-targeting settings
+- `xnurta-create-campaign` — create SP campaigns with ad groups, advertised products, targeting, negative targeting, placements, and optional AMC audiences
 
 **Optional (4)** — advanced analysis scenarios; add as needed after the required ones (under [`skills/`](../skills/)):
 
@@ -290,7 +291,7 @@ Skills live in this repo's [`skills/`](../skills/) directory, in two tiers:
 
 Pick the installation route that matches your assistant:
 
-- **Agents that can act on their own** (Claude Code, ChatGPT Codex, Cursor, etc.): point the AI at the skill directories and say "install the 7 required Skills"; add optional Skills as needed.
+- **Agents that can act on their own** (Claude Code, ChatGPT Codex, Cursor, etc.): point the AI at the skill directories and say "install the 8 required Skills"; add optional Skills as needed.
 - **Chat / UI-based assistants** (Claude web or desktop app, etc.): add them manually in each client's settings (in Claude, for example: Settings → Skills → upload, one by one).
 
 ---
@@ -331,7 +332,7 @@ It follows the Xnurta platform's update cadence — not second-level real-time.
 The available stores depend on your Xnurta account permissions and the scope granted through OAuth or the MCP Token. The final visible scope never exceeds your account permissions.
 
 **Q: Which write operations does this version support?**
-v1.2.0 supports creating, editing, and deleting AI managed groups. It also supports editing campaign budgets, status, and SP bidding strategies; keyword and target status and bids; promoted products; and supported negative targeting. Writes directly modify live configuration and take effect immediately, so verify the profile and object, confirm the exact change where required, and read back the result. Campaign creation and a separate delete operation are not supported; archiving through a campaign status update is supported.
+v1.3.0 supports creating, editing, and deleting AI managed groups; creating SP campaigns; and editing campaign budgets, status, SP bidding strategies, placement adjustments, and AMC audience bid adjustments. It also supports keyword and target status and bids, promoted products, and supported negative targeting. Writes directly modify live configuration and take effect immediately, so verify the profile and object, confirm the exact change where required, and read back the result. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported; archiving through a campaign status update is supported.
 
 **Q: Which managed-group settings are not supported yet?**
 Word-list settings are not supported. Managed-group scheduling is supported for reads and writes (SP/SB only - there is no SD schedule tool). Existing templates can be read and used to create or edit managed groups; creating or editing the reusable template definition itself remains platform-only. RBA rule configuration can now be read (conditions, actions, periods, hour matrices) but cannot be modified through MCP. Action space can be switched from RBA to AI, but still not from AI to RBA.
