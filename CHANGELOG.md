@@ -4,6 +4,19 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
 
 ## [Unreleased]
 
+### Fixed
+
+- Audience targeting is two pools, not one. `create_sp_sb_campaign` and `batch_update_ads` +
+  `updateAudienceBid` both take an `audienceSegmentType`, and sending the wrong one is accepted,
+  stored, and never applies on Amazon. The Skills now name both values, state that the campaign
+  row does not carry the type, and say to confirm with the user rather than guess.
+  `xnurta-create-campaign` `1.0.0` -> `1.0.1`, `xnurta-edit-ads` `1.1.0` -> `1.1.1`.
+- `get_ads_perf(factEntity='campaignAudience')` is not AMC-only, and a campaign appears there
+  when the audience report table has rows for it - not when an audience is bound. An empty
+  result is no longer described as "no audience bound"; read `entity: campaign` and test
+  `audienceId != ""` for that. `xnurta-query-ads-performance` `1.4.0` -> `1.4.1`,
+  `xnurta-query-entity-metadata` `1.4.0` -> `1.4.1`.
+
 ## [1.3.0] - 2026-09-17
 
 ### Added
