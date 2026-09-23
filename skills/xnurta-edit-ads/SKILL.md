@@ -10,7 +10,7 @@ description: >-
   those uses xnurta-create-ai-group / xnurta-edit-ai-group / xnurta-delete-ai-group. Not for
   reading data (use xnurta-query-ads-performance / xnurta-query-entity-metadata).
 metadata:
-  version: 1.1.1
+  version: 1.1.2
 ---
 
 # Edit Ads
@@ -123,7 +123,7 @@ distinct rejection messages: [`references/archived-guard.md`](references/archive
 | enable / pause / archive a campaign | `campaign` + `updateStatus` | if `archived` |
 | change SP bidding strategy | `campaign` + `updateBiddingStrategy` | - |
 | add negative keywords to a campaign | `negativeKeyword` + `create` | - |
-| enable / pause / archive negative keywords | `negativeKeyword` + `updateStatus` | if `archived` |
+| enable / pause / archive negative keywords | `negativeKeyword` + `updateStatus` — **SB cannot be paused; archiving is the only alternative and it is irreversible. Never substitute it automatically - get the user's explicit choice, then follow the normal confirmation / waiver policy** | if `archived` |
 | copy negative keywords elsewhere | `negativeKeyword` + `copy` | - |
 | add keywords / keyword groups / themes to an ad group | `keyword` + `create` | - |
 | enable / pause / archive keywords | `keyword` + `updateStatus` | if `archived` |

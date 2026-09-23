@@ -16,6 +16,28 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
   result is no longer described as "no audience bound"; read `entity: campaign` and test
   `audienceId != ""` for that. `xnurta-query-ads-performance` `1.4.0` -> `1.4.1`,
   `xnurta-query-entity-metadata` `1.4.0` -> `1.4.1`.
+- Managed-group creation now starts AI **on** by default, following the server change that made
+  `aiStatus` optional. The Skill states that the preview must say AI begins optimizing immediately,
+  and separates SP/SB (omit the field) from SD, where `status` has no server default and must be
+  sent explicitly. `xnurta-create-ai-group` `1.1.3` -> `1.1.4`.
+- Schedule writes were reworked after two server fixes. Deletion moved from `isActive: false` to
+  `operation: "delete"`; `isActive` is deprecated but **still deletes**, and the read side uses the
+  same field to mean "not inside its effective window", so a read row must never be echoed back as
+  a write payload. `weekDays` is now `1`-`7` on both sides (it was `0`-`6` on write), and omitted
+  schedules are unaffected - the save is a per-id upsert, not a batch replacement.
+  `xnurta-edit-ai-group` `1.1.4` -> `1.1.5`.
+- SB negative keywords no longer support `state: "paused"`; the server rejects the whole batch
+  before preview. Archiving is the only alternative and is irreversible, so it needs the user's
+  explicit choice - never substitute it automatically. `xnurta-edit-ads` `1.1.1` -> `1.1.2`.
+- Documented the failure modes that return an empty result instead of an error: an id filter whose
+  value belongs to the other id space matches nothing and returns zero rows silently. The
+  zero-result diagnosis checklist now covers it. `xnurta-query-entity-metadata` `1.4.1` -> `1.4.2`,
+  `xnurta-query-ads-performance` `1.4.1` -> `1.4.2`, `xnurta-query-operation-log` `1.3.1` -> `1.3.2`,
+  and the four analysis Skills `1.0.5` -> `1.0.6`.
+- Corrected the audience-binding guidance now that the server validates it: `audienceSegmentType` is
+  required whenever `audienceId` is set, and the server checks the id against the named pool before
+  creating anything - a mismatch rejects the whole request rather than storing something that never
+  applies. `xnurta-create-campaign` `1.0.1` -> `1.0.2`.
 
 ## [1.3.0] - 2026-09-17
 
