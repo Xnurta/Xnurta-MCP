@@ -38,6 +38,36 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
   required whenever `audienceId` is set, and the server checks the id against the named pool before
   creating anything - a mismatch rejects the whole request rather than storing something that never
   applies. `xnurta-create-campaign` `1.0.1` -> `1.0.2`.
+- Placement enums on the performance side were wrong, and the wrong value returned zero rows
+  without an error - which read as "this store has no placement data". `placement.placement_`
+  actually returns `SP-`/`SB-`-prefixed display strings; the `topOfSearch` / `productPage` /
+  `restOfSearch` codes belong to `get_entity_metadata(entity='placement')`, a separate value
+  space. Three spaces share the name "placement" and the Skills now spell out which is which.
+- The metadata side is the authoritative source for placement bid adjustments; the performance
+  side is not. Its `SB-Top of Search on-Amazon` row carries the **Home** adjustment, SB's real
+  top-of-search value is missing, Sponsored Display has no placement rows at all, and a negative
+  `multiplier_` is not a percentage anyone configured. Also documented the unattributed bucket
+  that can hold a quarter of a store's SP impressions, and aligned the EN/ZH labels with the web
+  console - including that SP's 首页 means the first *page* of search results while SB's 首页 is
+  the Amazon *homepage*.
+- `placementTypes` on the operation log was documented as "exactly these 4 values"; it is 7.
+- Splitting an entity by a dimension from below it multiplies the numbers with no error: an ad
+  group queried with `productAd.asin_` repeats its whole spend and order count on every ASIN,
+  so a product with zero conversions reads as a healthy ACOS. `SKILL.md` no longer says the
+  system's automatic joins need no thought; it names `productAd` as the entity for per-product
+  performance, and separates that from narrowing target / search-term performance to a product
+  scope, which keeps the original `factEntity` and filters by ad group instead. That narrowing
+  takes three steps, not two - the metadata tool returns internal ids while the performance side
+  filters on Amazon ids, so the middle conversion is required or the query silently returns
+  nothing. A real target x product cross-split is not available and must not be substituted.
+- Added a "diagnosing inflated or non-reconciling numbers" section to the shared platform notes,
+  mirroring the existing zero-results checklist: re-run without the extra dimension and confirm
+  the split sums to the whole. It is scoped to product dimensions, so ordinary queries are
+  unaffected. Also documented the `p.` prefix for filtering the fact table directly, and which
+  fact entities actually carry `p.adGroupId_`.
+- No version numbers changed in this batch: the patch versions above have not been published to
+  GitHub or the Skill Hub yet (both still serve the previous patch), so both batches ship under
+  the same versions.
 
 ## [1.3.0] - 2026-09-17
 
