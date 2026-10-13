@@ -2,11 +2,11 @@
 
 Bring Xnurta's advertising capabilities into your own AI agent (Claude, ChatGPT, and more) and make your data part of your workflow — query data, run analyses, and calculate true profitability in plain language, combining your own costs, margins, and goals. After authorization, there is no need to repeatedly sign in to the platform, export spreadsheets, or switch between systems.
 
-The current Xnurta MCP v1.3.0 supports data queries, AI managed-group management, SP campaign creation, and live Amazon Sponsored Ads editing. You can create SP campaigns with ad groups, advertised products, targeting, and placement settings; update campaign budgets, status, and SP bidding strategies; and manage keywords, targets, promoted products, and negative targeting. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported; archiving a campaign through a status update is supported.
+The current Xnurta MCP v1.3.1 supports data queries, AI managed-group management, SP campaign creation, and live Amazon Sponsored Ads editing. You can create SP campaigns with ad groups, advertised products, targeting, and placement settings; update campaign budgets, status, and SP bidding strategies; and manage keywords, targets, promoted products, and negative targeting. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported; archiving a campaign through a status update is supported.
 
 ---
 
-## What v1.3.0 can do for you
+## What v1.3.1 can do for you
 
 - **Query your data in natural language** — ask "rank last week's campaigns by ACOS" or "show this product line's TACOS trend over the past 8 weeks" right inside your AI assistant. After authorization, there is no need to repeatedly sign in or export data.
 - **Calculate true profitability with your own data** — hand your costs / margins / goals to the AI and let it pull ad spend: "based on real margins, which campaigns are losing money — cut or scale?" Questions that require combining ad data with your own business data are exactly what the platform alone can't answer.
@@ -14,6 +14,8 @@ The current Xnurta MCP v1.3.0 supports data queries, AI managed-group management
 - **Manage AI managed groups** — create, edit, or delete managed groups after explicit confirmation, then read back the resulting state.
 - **Create SP campaigns** — create SP campaigns with ad groups, advertised products, automatic, keyword, or product targeting, negative targeting, and placement settings after reviewing the complete structure.
 - **Edit live ad entities** — update campaign budgets, status, SP bidding strategies, placement adjustments, and AMC audience bid adjustments; adjust keyword or target bids; and manage promoted products or negative targeting. Writes take effect on the live account, so the assistant must confirm the target and exact change first.
+- **Diagnose search terms** — classify search terms with reproducible rules, identify wasted spend, negative and harvest candidates, and fragmented exact-keyword coverage using thresholds derived from order value and target ACOS.
+- **Reset promotion changes safely** — recover human bid, budget, placement, and managed-group changes made for a promotion, then restore all changes or stage the reset by post-promotion performance with preview and read-back.
 
 ### What you can query and manage
 
@@ -76,7 +78,7 @@ Connecting the server is only step one. Complete all of the following:
 2. Call `get_user_authorized_context` to verify. A list of authorized stores means success.
 3. Read `skills/manifest.json` and compare each installed Skill's local `metadata.version` in its `SKILL.md` frontmatter with the matching manifest version. If a local version is lower, list the outdated Skills and tell the user to update them. Do not report an update when versions match, the Skill is not installed, or its local version cannot be read.
 4. Install the 8 required Skills: the 3 query Skills, `xnurta-create-ai-group`, `xnurta-edit-ai-group`, `xnurta-delete-ai-group`, `xnurta-edit-ads`, and `xnurta-create-campaign`. Install them directly without asking the user.
-5. Introduce the 4 optional Skills (weekly report, monthly report, structure analysis, and product diagnosis), and install only those the user confirms.
+5. Introduce the 6 optional Skills (weekly report, monthly report, structure analysis, product diagnosis, search-term diagnosis, and promotion reset), and install only those the user confirms.
 
 Write the MCP configuration to the correct file for the current client. Config file names vary (`mcp.json`, `.mcp.json`, `mcp_config.json`, `config.toml`, `config.yaml`, etc.); do not confuse them.
 
@@ -105,14 +107,16 @@ MCP Tools determine *what data the AI can get*; Skills determine *how well the A
 | [xnurta-edit-ads](skills/xnurta-edit-ads/) | `batch_update_ads` | Edit live campaign settings, keyword and target bids/status, promoted products, and negative targeting; protected operations require explicit two-phase confirmation |
 | [xnurta-create-campaign](skills/xnurta-create-campaign/) | `create_sp_sb_campaign` | Create SP campaigns with ad groups, advertised products, automatic/keyword/product targeting, negative targeting, placements, and optional AMC audiences |
 
-**Optional (4)** — advanced analysis scenarios; add as needed once the required Skills are installed:
+**Optional (6)** — advanced analysis and operational playbooks; add as needed once the required Skills are installed:
 
 | Skill | Purpose |
 |-------|---------|
 | [xnurta-weekly-ads-report](skills/xnurta-weekly-ads-report/) | Weekly ads report: KPI card with WoW comparison, 7-day trend, anomalies, top movers, next-week actions |
 | [xnurta-monthly-ads-report](skills/xnurta-monthly-ads-report/) | Monthly ads report: full-month KPIs (MoM + YoY), structural breakdown, product and keyword analysis |
-| [xnurta-ads-structure-analysis](skills/xnurta-ads-structure-analysis/) | Structure analysis: locate structural mismatches across campaign type / marketplace / portfolio / weekday / hour-of-day dimensions |
+| [xnurta-ads-structure-analysis](skills/xnurta-ads-structure-analysis/) | Structure analysis: locate structural mismatches across campaign type / marketplace / portfolio / weekday / hour-of-day dimensions and campaign-size tiers |
 | [xnurta-product-diagnosis](skills/xnurta-product-diagnosis/) | Product diagnosis: ASIN health tiering, variant comparison, keep/optimize/cut recommendations |
+| [xnurta-search-term-diagnosis](skills/xnurta-search-term-diagnosis/) | Search-term diagnosis: classify search terms and surface spend distribution, negative and harvest candidates, and fragmented exact keywords using store-specific thresholds |
+| [xnurta-promo-reset](skills/xnurta-promo-reset/) | Promotion reset: recover human changes and pre-promotion values, then restore them all at once or stage the reset by post-promotion performance with preview and read-back |
 
 **How to install** (either way):
 

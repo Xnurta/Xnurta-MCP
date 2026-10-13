@@ -282,12 +282,14 @@ Skills live in this repo's [`skills/`](../skills/) directory, in two tiers:
 - `xnurta-edit-ads` — edit supported live campaign, keyword, target, promoted-product, and negative-targeting settings
 - `xnurta-create-campaign` — create SP campaigns with ad groups, advertised products, targeting, negative targeting, placements, and optional AMC audiences
 
-**Optional (4)** — advanced analysis scenarios; add as needed after the required ones (under [`skills/`](../skills/)):
+**Optional (6)** — advanced analysis and operational playbooks; add as needed after the required ones (under [`skills/`](../skills/)):
 
 - `xnurta-weekly-ads-report` — weekly ads report
 - `xnurta-monthly-ads-report` — monthly ads report
 - `xnurta-ads-structure-analysis` — ad structure analysis
 - `xnurta-product-diagnosis` — product diagnosis
+- `xnurta-search-term-diagnosis` — search-term diagnosis
+- `xnurta-promo-reset` — post-promotion configuration reset
 
 Pick the installation route that matches your assistant:
 
@@ -332,7 +334,7 @@ It follows the Xnurta platform's update cadence — not second-level real-time.
 The available stores depend on your Xnurta account permissions and the scope granted through OAuth or the MCP Token. The final visible scope never exceeds your account permissions.
 
 **Q: Which write operations does this version support?**
-v1.3.0 supports creating, editing, and deleting AI managed groups; creating SP campaigns; and editing campaign budgets, status, SP bidding strategies, placement adjustments, and AMC audience bid adjustments. It also supports keyword and target status and bids, promoted products, and supported negative targeting. Writes directly modify live configuration and take effect immediately, so verify the profile and object, confirm the exact change where required, and read back the result. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported; archiving through a campaign status update is supported.
+v1.3.1 supports creating, editing, and deleting AI managed groups; creating SP campaigns; and editing campaign budgets, status, SP bidding strategies, placement adjustments, and AMC audience bid adjustments. It also supports keyword and target status and bids, promoted products, and supported negative targeting. Writes directly modify live configuration and take effect immediately, so verify the profile and object, confirm the exact change where required, and read back the result. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported; archiving through a campaign status update is supported.
 
 **Q: Which managed-group settings are not supported yet?**
 Word-list settings are not supported. Managed-group scheduling is supported for reads and writes (SP/SB only - there is no SD schedule tool). Existing templates can be read and used to create or edit managed groups; creating or editing the reusable template definition itself remains platform-only. RBA rule configuration can now be read (conditions, actions, periods, hour matrices) but cannot be modified through MCP. Action space can be switched from RBA to AI, but still not from AI to RBA.

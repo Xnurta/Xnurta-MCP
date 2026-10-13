@@ -4,6 +4,20 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-10-13
+
+### Added
+
+- Added optional `xnurta-search-term-diagnosis` `1.0.0`: a read-only, reproducible search-term workflow covering spend distribution, brand/non-brand and keyword/ASIN classification, negative and harvest candidates, and fragmented exact-keyword coverage. Thresholds are derived from the store's order value and target ACOS.
+- Added optional `xnurta-promo-reset` `1.0.0`: recovers human bid, budget, placement, and managed-group changes made for a promotion and their pre-promotion values, then restores all changes or stages the reset by post-promotion performance with preview, undo data, and read-back.
+
+### Changed
+
+- Query Skills were aligned with the latest reporting, metadata, operation-log, placement, ID-space, and aggregation contracts: `xnurta-query-ads-performance` `1.4.2` -> `1.4.3`, `xnurta-query-entity-metadata` `1.4.2` -> `1.4.3`, and `xnurta-query-operation-log` `1.3.2` -> `1.3.3`.
+- Managed-group Skills now cover platform-template selection, current schedule behavior, and the latest read/write constraints: `xnurta-create-ai-group` `1.1.4` -> `1.2.0`, `xnurta-edit-ai-group` `1.1.5` -> `1.2.0`, and `xnurta-delete-ai-group` `1.0.6` -> `1.0.7`.
+- Weekly report, monthly report, ad-structure analysis, and product diagnosis were expanded with the current query boundaries and diagnostic rules; all four move from `1.0.6` to `1.1.0`.
+- Optional Skills increased from 4 to 6, and plugin/package manifests now publish release `v1.3.1` with 14 Skills in total.
+
 ### Fixed
 
 - Audience targeting is two pools, not one. `create_sp_sb_campaign` and `batch_update_ads` +
@@ -65,9 +79,8 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
   the split sums to the whole. It is scoped to product dimensions, so ordinary queries are
   unaffected. Also documented the `p.` prefix for filtering the fact table directly, and which
   fact entities actually carry `p.adGroupId_`.
-- No version numbers changed in this batch: the patch versions above have not been published to
-  GitHub or the Skill Hub yet (both still serve the previous patch), so both batches ship under
-  the same versions.
+- The later placement and cross-entity aggregation corrections were folded into the final
+  `v1.3.1` Skill versions listed above instead of receiving separate interim releases.
 
 ## [1.3.0] - 2026-09-17
 
