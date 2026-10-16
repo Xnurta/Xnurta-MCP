@@ -3,7 +3,7 @@ name: xnurta-weekly-ads-report
 description: >-
   Generate a weekly ad performance recap report for ads ops / customer-facing teams to use every Monday.
   Includes a KPI card (with WoW comparison), 7-day trend, anomaly summary, top-mover lists, and next-week
-  action recommendations. Use when the user says "出个周报", "周复盘", "上周表现如何", "weekly report".
+  action recommendations. Use when the user asks for a weekly report, weekly recap, or last week's performance.
   Not for monthly/quarterly reports (use xnurta-monthly-ads-report / quarterly-ads-report, not yet built),
   nor for deep-dive analysis on a specific question (use the relevant analysis skill instead).
 metadata:
@@ -26,13 +26,15 @@ This skill does **not** map to a single MCP tool of its own — it orchestrates 
 
 ## Output Language: Always Match the User, Never Hard-Code Chinese or English
 
-**The worked examples and output templates below are written in Chinese** (matching this product's primary customer base), but they are **structural illustrations, not literal text to copy verbatim**. Generate the actual report in whatever language the user asked in — section headers, KPI labels, the one-line summary, everything. A customer who asks in English should get an English report with English headers ("Weekly KPI Overview", not "本周 KPI 概览"); a customer who asks in Japanese should get one in Japanese. Do not assume the audience is Chinese-speaking just because this skill's own documentation and templates are.
+**The worked examples and output templates are written in English, but they are structural
+illustrations, not literal text to copy verbatim.** Generate the actual report in the user's
+language, including section headers, KPI labels, summaries, and recommendations.
 
 When calling `get_ads_perf`, also set the `language` parameter (`zh`/`en`/`ja`) to match the customer's language — this controls the human-readable enum companion text the tool returns (e.g. `campaignTypeText`, `targetMatchTypeText`), so a customer reading an English report doesn't see a Chinese enum label embedded in an otherwise-English table. **`get_entity_metadata` has no `language` parameter** — it's not in that tool's documented parameter list. Localize its enum values using the returned `{field}Text` companion fields, or `xnurta-query-entity-metadata`'s own [`enum-i18n.md`](../xnurta-query-entity-metadata/references/enum-i18n.md) if a given enum has no `Text` companion — don't pass `language` to `get_entity_metadata` expecting it to have the same effect as on `get_ads_perf`.
 
 ## When to Use
 
-**Trigger phrases**: 周报, 周复盘, 上周表现, weekly report, recap last week, 周会材料
+**Trigger phrases**: weekly report, weekly recap, last week's performance, weekly meeting material
 
 **User roles**: ads ops, customer-facing AM/CSM
 
@@ -58,7 +60,7 @@ When calling `get_ads_perf`, also set the `language` parameter (`zh`/`en`/`ja`) 
 Always call `get_user_authorized_context` first to get the authorized `profiles` list, then apply exactly one of these cases:
 
 1. **The user named specific store(s)** ("Demo US", "my UK store") → resolve the name(s) against the authorized list and query only the matching profile(s).
-2. **The user explicitly said "all stores" / "全账号" / equivalent** → query all authorized `profileIds`.
+2. **The user explicitly said "all stores" or equivalent** -> query all authorized `profileIds`.
 3. **The user didn't name a store, and there's only one authorized profile** → use it directly. There's nothing to ask — one option is not a choice.
 4. **The user didn't name a store, and there are multiple authorized profiles**:
    - **5 or fewer** → you may default to using all of them.
@@ -75,7 +77,7 @@ gets the same numbers whichever skill answers. Those two skills are separate ins
 them as "if installed", and when the user doesn't have them, say what to look at instead -
 never promise to run a skill that may not be there.
 
-- **One target ACOS.** Use the store-wide target the user gives (ask "整店希望 ACOS 控制在多少"
+- **One target ACOS.** Use the store-wide target the user gives (ask "What store-wide ACOS should I use?"
   when a threshold depends on it); without one, use the store's own ACOS for the period and say
   so where the threshold is first used. Never use managed groups' `targetAcos` as thresholds -
   one store can have dozens, from single digits to over 200%, and rank-push or launch groups set

@@ -7,8 +7,8 @@ description: >-
   them - all at once, or (the user's choice) paced by post-promo performance: immediately,
   stepped down over 2-3 days, or held - with a reason per item, a preview, an undo file and
   read-back. Use
-  when the user says "大促结束了把调整复位", "把 Prime Day 改的预算改回去", "黑五调的出价恢复一下",
-  "大促期间我都改了什么", "reset my promo changes", "revert Prime Day bids". Not for
+  when the user says "reset my promo changes", "restore the budgets changed for Prime Day",
+  "revert Black Friday bids", or "what did I change during the promotion?". Not for
   setting things up before a promo, not for undoing AI's own adjustments, and not for
   general budget or bid edits with no promo behind them (use xnurta-edit-ads /
   xnurta-edit-ai-group).
@@ -16,7 +16,7 @@ metadata:
   version: 1.0.0
 ---
 
-# Promo Reset (大促调整复位)
+# Promo Reset
 
 ## Scope: an orchestration skill
 
@@ -57,13 +57,13 @@ same file). The cross-tool points that matter for this skill:
 
 ## Output language
 
-Examples below are in Chinese because most customers are. They show structure, not text to
-copy: answer in the user's language, and pass `language` to `get_ads_perf` to match.
+The skill documentation and examples are written in English. Answer in the user's language and
+pass the matching `language` value to `get_ads_perf` so returned display text is consistent.
 
 ## What it does, in one paragraph
 
 A promo is set up by hand: budgets raised, bids raised, placement multipliers raised, managed
-groups switched to "活动冲量" (promotion sales boost) with a looser target ACOS. After the
+groups switched to Promotion sales boost with a looser target ACOS. After the
 promo all of that has to come back, and people forget what they changed, forget to change it
 back, or cut everything at once and lose traffic that was still converting. This skill
 recovers every human promo change and its **pre-promo value** from the operation log and,
@@ -98,7 +98,7 @@ Before asking, look at the store's daily spend around the dates the user gave (`
 `factEntity: campaign`, `select: ["date"]`) and propose the window from the data: "spend was
 about 2x normal on 10/6-10/7, and there were many changes on 10/5 and 10/8 - include those
 four days?" Promo adjustments routinely start a day or two before the event and end a day
-after. Also say now if the managed groups are still in "活动冲量" - that is often the
+after. Also say now if the managed groups are still in Promotion sales boost - that is often the
 biggest single item (Step 2c).
 
 Resolve `profileIds` the usual way (`get_user_authorized_context`; one store unless the user
@@ -117,7 +117,7 @@ a. **Pull the log without a `changeBy` filter and classify `changedBy` yourself.
    literally `Manual`, and misses every change attributed to a user's email (seen in
    production 2026-10: a whole promo's budget changes, all email-attributed, returned
    nothing under `manual`).
-   The user may widen the sources ("API 改的也算") - then say in the list header which sources
+   The user may widen the sources (for example, "include API changes") - then say in the list header which sources
    are included.
 
 b. **Pre-promo value = the `previousValue` of the first human change to that field inside the
@@ -129,13 +129,13 @@ c. **Managed-group settings go on the list too, and go first.** Objective (`opti
    the log, `targetType` on SP/SB write), target ACOS (`acos`), AI personality, bid range
    (`bidRangeMin` / `bidRangeMax`), action-space switches and the group's **total budget**
    changed directly on a group do not revert by themselves. Groups that used a **dated
-   schedule** for the promo revert automatically when it ends - list them as "已由排期自动失效",
+   schedule** for the promo revert automatically when it ends - list them as "expired automatically by schedule",
    nothing to do. Restore group settings before budgets: the objective and target decide how AI
    bids; the budget is only a ceiling.
 
    **Zero managed-group rows is not proof of zero changes.** The managed-group log query
    returns an empty list when it fails internally instead of an error. If it comes back empty
-   while groups are still on "活动冲量" (`targetType: 3` in `get_entity_metadata`), say the
+   while groups are still on Promotion sales boost (`targetType: 3` in `get_entity_metadata`), say the
    group history could not be read and treat those groups as "you decide".
 
 d. **Budgets: only `dailyBudget` counts.** In managed groups AI rewrites the day's spendable
@@ -198,8 +198,8 @@ Show the customer, in this order:
 2. **Managed-group settings** to restore (old -> new per field).
 3. **Restore now**, **step down** (with each day's value), **restore at once** - each row:
    name, now -> target (or the daily steps), post-promo spend, reason with numbers. In "all at
-   once" mode there is only **restore at once**: name, now -> target, reason "按你的选择，不看表现
-   直接复位", no performance columns.
+   once" mode there is only **restore at once**: name, now -> target, reason "restored without
+   performance evaluation, as requested", no performance columns.
 4. **You decide**: lowered, changed again later, created during the promo.
 5. **Skipped**: already at the pre-promo value; restored by schedule.
 
@@ -237,7 +237,7 @@ items, change a suggested pace, or stop at the list.
    | `status` | see the state table below; `planned` at creation |
 
    **Update the file after every write and read-back, and hand the updated file back to the
-   user.** MCP keeps no state between conversations: the next day's "继续复位" works only from
+   user.** MCP keeps no state between conversations: the next day's "continue the reset" works only from
    this file (or, in the same conversation, the latest version of it). If the user cannot
    provide it, say the run cannot be resumed reliably and rebuild a fresh restore list
    instead.
@@ -253,7 +253,7 @@ items, change a suggested pace, or stop at the list.
    | `done` | Last step confirmed by read-back. Nothing to do |
    | `stoppedChangedByOthers` / `skipped` | Nothing to do unless the user asks for that item specifically |
 
-   "撤回刚才的复位" = write `valueBeforeRun` back for every row with `lastCompletedStep > 0`,
+   "Undo the reset" means writing `valueBeforeRun` back for every row with `lastCompletedStep > 0`,
    through the same stale check, preview and confirmation - an undo must not overwrite a
    change made after this run either.
 2. **Stale check - before every write, including resumed steps and undo.** Two conditions,
@@ -281,7 +281,7 @@ items, change a suggested pace, or stop at the list.
    (`xnurta-edit-ads`). Split batches by `campaignType` (budget batches must be one type) and
    keep each under the write skills' caps.
 4. **Today's step only.** For stepped items, write today's value; the later steps are a plan.
-   MCP cannot schedule writes - the customer says "继续复位" on each following day. On that
+   MCP cannot schedule writes - the customer asks to continue the reset on each following day. On that
    day **drive the work from the plan file, not from a fresh restore list**: handle every row
    by its `status` (table above), running the stale check before each write. Do not write a
    step twice on the same store day.
@@ -291,63 +291,72 @@ items, change a suggested pace, or stop at the list.
    last step). An `ambiguous` result sets `needsReadBack`, never a completed step. Report what
    moved, what did not, and why.
 
-A waiver ("这批直接执行") follows the owning write skill's waiver rules exactly - the scope is
+A waiver such as "execute this batch without another confirmation" follows the owning write
+skill's waiver rules exactly - the scope is
 what the user said, and the verification still runs.
 
 ## Example
 
-> **客户**：把 Prime Big Deal Days 的调整复位一下。
+> **Customer**: Reset the changes made for Prime Big Deal Days.
 >
-> **AI**：先确认三件事：① 从店铺数据看，大促是 10/6–10/7，10/5 和 10/8 也有大量调整——这 4 天都算进来吗？② 复位方式：不看表现、全部直接复位，还是根据表现分批复位？③ 大促后还有延续的 Deal 或库存紧张的商品吗？
+> **AI**: Please confirm three things. Store data suggests the promotion ran Oct 6-7, with many
+> changes also on Oct 5 and Oct 8. Should all four days be included? Should everything be restored
+> at once, or in batches based on performance? Are any deals still running or products low on stock?
 >
-> **客户**：10/5–10/8 都算；根据表现分批；没有延续的 Deal。
+> **Customer**: Include Oct 5-8, restore in performance-based batches, and no deals are continuing.
 >
-> **AI**：10/5–10/8 你在亚马逊后台调整了 88 个活动的预算，结合 10/9–10/11 的表现：
-> - **立即复位 16 个**：例如 Snacks-SP-Exact-Keyword，预算 $100 → $50，大促后 ACOS 119%，既超出店铺平时的 34–41%，也高于目标 41%。这 16 个大促后 3 天合计花了 $1,533。
-> - **分几天回落 13 个**：例如 Noodles-SP-Exact-Keyword，$100 → $78 → $57 → $35，大促后转化率 13.9%，仍高于平时的 8.3–9.7%。
-> - **一次复位 7 个**：表现正常或几乎没花钱。
-> - **需要你决定 49 个**：4 个在 10/9 之后你又改过；45 个是大促期间被调低的，默认不加回去。
+> **AI**: You changed budgets for 88 campaigns in Amazon Ads from Oct 5-8. Based on performance
+> from Oct 9-11:
+> - **Restore now: 16**. For example, Snacks-SP-Exact-Keyword goes from $100 back to $50. Its
+>   post-promo ACOS was 119%, above both its normal 34-41% range and its 41% target. These 16
+>   campaigns spent $1,533 over the three post-promo days.
+> - **Step down over several days: 13**. For example, Noodles-SP-Exact-Keyword goes from $100 to
+>   $78, then $57, then $35. Its post-promo conversion rate was 13.9%, still above its normal
+>   8.3-9.7% range.
+> - **Restore once: 7**. Performance was normal or spend was too low to evaluate.
+> - **Customer decision: 49**. Four were changed again after Oct 9; 45 were reduced during the
+>   promotion and will not be increased automatically.
 >
-> 执行前我会先存一份撤销文件。要看预览吗？
+> I will save an undo file before execution. Would you like to review the write preview?
 
 ## Output templates
 
 ### markdown
 
 ```markdown
-# 大促调整复位 · {店铺}
-**大促时间段**：{start} ~ {end}（{时区}）　**复位方式**：{根据表现分批 / 不看表现、全部直接复位}
-{仅分批模式：**表现取数**：{post start} ~ {post end}}
-**统计来源**：人工（邮箱账号）+ 亚马逊后台{+ 用户放宽的来源}
-{数据不足、只覆盖部分、时间按 UTC 等说明}
+# Promo Reset - {store}
+**Promotion window**: {start} ~ {end} ({timezone})  **Restore mode**: {performance-based batches / restore all at once}
+{Performance-based mode only: **Performance window**: {post start} ~ {post end}}
+**Change sources**: Human users (email accounts) + Amazon Console {+ user-approved additional sources}
+{Notes about insufficient data, partial coverage, UTC timestamps, or other limits}
 
-## 总览
-| 分组 | 数量 | 怎么处理 |
+## Summary
+| Group | Count | Handling |
 |---|---|---|
-| 托管组设置复位 | {n} 个组 | 投放目的、目标 ACOS{、出价范围}改回大促前 |
-| 立即复位 | {n} | ... |
-| 分几天回落 | {n} | ... |
-| 一次复位 | {n} | ... |
-| 需要你决定 | {n} | 大促期间被调低 / 大促后又改过 / 大促期间新建 |
-| 无需处理 | {n} | 已是原值 / 已由排期自动失效 |
+| Managed-group settings | {n} groups | Restore objective, target ACOS, and other changed settings |
+| Restore now | {n} | ... |
+| Step down | {n} | ... |
+| Restore once | {n} | ... |
+| Customer decision | {n} | Reduced during promo / changed again later / created during promo |
+| No action | {n} | Already at original value / schedule expired automatically |
 
-{全部直接复位时：总览只有“托管组设置复位”“一次复位”“需要你决定”“无需处理”四行；不写整店参考；“一次复位”表去掉“大促后3天花费”列，理由写“按你的选择，不看表现直接复位”}
+{In all-at-once mode, keep only Managed-group settings, Restore once, Customer decision, and No action. Omit store context and the post-promo spend column; use the reason "restored without performance evaluation, as requested".}
 
-整店参考（仅分批模式）：大促前日均销售 {x}、ACOS {y}；大促后 {x2}、{y2}。
+Store context (performance-based mode only): pre-promo daily sales {x}, ACOS {y}; post-promo {x2}, {y2}.
 
-## 托管组设置复位
-| 托管组 | 投放目的 | 目标 ACOS | 其他 |
-## 立即复位
-| 对象 | 现在 | 复位到 | 大促后3天花费 | 理由 |
-## 分几天回落
-| 对象 | 现在 | 每天复位到 | 大促后3天花费 | 理由 |
-## 一次复位
-| 对象 | 现在 | 复位到 | 大促后3天花费 | 理由 |
-## 需要你决定
-| 对象 | 大促前 | 现在 | 情况 |
+## Managed-Group Settings
+| Managed group | Objective | Target ACOS | Other settings |
+## Restore Now
+| Object | Current | Restore to | Post-promo 3-day spend | Reason |
+## Step Down
+| Object | Current | Daily steps | Post-promo 3-day spend | Reason |
+## Restore Once
+| Object | Current | Restore to | Post-promo 3-day spend | Reason |
+## Customer Decision
+| Object | Pre-promo | Current | Situation |
 
 ---
-_生成时间：{timestamp} · 数据源：Xnurta MCP · Skill: xnurta-promo-reset v{version}_
+_Generated: {timestamp} - Data source: Xnurta MCP - Skill: xnurta-promo-reset v{version}_
 ```
 
 Name every object by its name (`campaignName`, `aiGroupName`, keyword text), never by an
@@ -403,7 +412,7 @@ the user chose to restore without judging performance.
 | Situation | Handling |
 |---|---|
 | Log `truncated: true` / `hasNextPage: true` | Page (single entity) or split the window - see the operation-log skill. Never build the list from a partial log |
-| No human change found in the window | Say so, show which sources and dates were searched, offer to widen the window or the sources. Empty managed-group history while groups are still on 活动冲量 = the query failed, not "nothing changed" |
+| No human change found in the window | Say so, show which sources and dates were searched, offer to widen the window or the sources. Empty managed-group history while groups are still on Promotion sales boost means the query failed, not "nothing changed" |
 | An item's current value differs from the log's last value | Move it to "you decide" (Step 5.2) |
 | A write is refused or `ambiguous_write` | Follow the owning write skill: do not retry blindly, read back, report |
 | Fewer than 5 usable 3-day windows before the promo | Use the store-level normal range and say so ([`pacing-rules.md`](references/pacing-rules.md)) |

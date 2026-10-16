@@ -5,8 +5,8 @@ description: >-
   Includes full-month KPIs (MoM + YoY), goal attainment, structural breakdown (campaign type /
   site / portfolio share), product analysis (Top ASIN changes, new products, long-tail), keyword
   performance (Top keywords; search-term negatives / harvesting go to xnurta-search-term-diagnosis),
-  an issues list with attribution, and next-month structural recommendations. Use when the user says "出个月报",
-  "月度复盘", "这个月表现如何", "monthly report". Not for weekly recaps (use xnurta-weekly-ads-report) or
+  an issues list with attribution, and next-month structural recommendations. Use when the user asks
+  for a monthly report, monthly recap, or this month's performance. Not for weekly recaps (use xnurta-weekly-ads-report) or
   quarterly/QBR-level strategic review (use quarterly-ads-report, not yet built).
 metadata:
   version: 1.1.0
@@ -30,13 +30,15 @@ This skill shares its overall shape with [xnurta-weekly-ads-report](../xnurta-we
 
 ## Output Language: Always Match the User, Never Hard-Code Chinese or English
 
-**The worked examples and output templates below are written in Chinese** (matching this product's primary customer base), but they are **structural illustrations, not literal text to copy verbatim**. Generate the actual report in whatever language the user asked in — section headers, KPI labels, everything. Do not assume the audience is Chinese-speaking just because this skill's own documentation and templates are.
+**The worked examples and output templates below are written in English, but they are structural
+illustrations, not literal text to copy verbatim.** Generate the actual report in the user's
+language, including section headers and KPI labels.
 
 When calling `get_ads_perf`, also set the `language` parameter (`zh`/`en`/`ja`) to match the customer's language, so returned enum companion text (e.g. `campaignTypeText`) is localized consistently with the rest of the report. **`get_entity_metadata` has no `language` parameter** — it's not in that tool's documented parameter list. Localize its enum values using the returned `{field}Text` companion fields, or `xnurta-query-entity-metadata`'s own [`enum-i18n.md`](../xnurta-query-entity-metadata/references/enum-i18n.md) if a given enum has no `Text` companion — don't pass `language` to `get_entity_metadata` expecting it to have the same effect as on `get_ads_perf`.
 
 ## When to Use
 
-**Trigger phrases**: 月报, 月度复盘, 这个月表现如何, monthly report, recap this month
+**Trigger phrases**: monthly report, monthly recap, this month's performance
 
 **User roles**: ads managers, account managers (client-facing)
 
@@ -62,7 +64,7 @@ When calling `get_ads_perf`, also set the `language` parameter (`zh`/`en`/`ja`) 
 Always call `get_user_authorized_context` first to get the authorized `profiles` list, then apply exactly one of these cases:
 
 1. **The user named specific store(s)** → resolve the name(s) against the authorized list and query only the matching profile(s).
-2. **The user explicitly said "all stores" / "全账号" / equivalent** → query all authorized `profileIds`.
+2. **The user explicitly said "all stores" or equivalent** -> query all authorized `profileIds`.
 3. **The user didn't name a store, and there's only one authorized profile** → use it directly — there's nothing to ask.
 4. **The user didn't name a store, and there are multiple authorized profiles**:
    - **5 or fewer** → you may default to using all of them.
@@ -79,7 +81,7 @@ gets the same numbers whichever skill answers. Those two skills are separate ins
 them as "if installed", and when the user doesn't have them, say what to look at instead -
 never promise to run a skill that may not be there.
 
-- **One target ACOS.** Use the store-wide target the user gives (ask "整店希望 ACOS 控制在多少"
+- **One target ACOS.** Use the store-wide target the user gives (ask "What store-wide ACOS should I use?"
   when a threshold depends on it); without one, use the store's own ACOS for the period and say
   so where the threshold is first used. Never use managed groups' `targetAcos` as thresholds -
   one store can have dozens, from single digits to over 200%, and rank-push or launch groups set
@@ -241,7 +243,7 @@ Report both months' share percentages and the point-change (e.g. "SP share: 62% 
 
 **Top keyword performance**: from Step 2i, rank by Spend or Sales, report Impressions/Clicks/Spend/Sales/ACOS per keyword. If a MoM comparison is wanted, pull the same-shape data for last month and join by `target.targetId_` the same way as Step 6.
 
-**Search-term negatives and harvesting are out of scope here.** Doing them properly needs brand terms, a whitelist, own ASINs, the exact keywords already running, match-type sources and order thresholds by product stage - that is `xnurta-search-term-diagnosis` (if installed). In the report, add one line pointing to it ("要看该否哪些词、哪些词值得单独投，可以跑搜索词诊断"), and offer to run it for the same month.
+**Search-term negatives and harvesting are out of scope here.** Doing them properly needs brand terms, a whitelist, own ASINs, the exact keywords already running, match-type sources and order thresholds by product stage - that is `xnurta-search-term-diagnosis` (if installed). In the report, add one line pointing to it ("Run Search Term Diagnosis to identify negative and dedicated-targeting candidates"), and offer to run it for the same month.
 
 **Zero-Sales ACOS handling** (Step 2i): a keyword with `Sales = 0` has an undefined `ACOS` - never treat it as "infinite" or sort it to the extreme end of an ACOS ranking; show its Spend and "no sales" instead.
 
@@ -414,13 +416,13 @@ Output JSON schema:
 ## Example Call
 
 **User input**:
-> 给 Demo US 出个上个月的月报，ACOS 目标是 25%
+> Generate last month's report for Demo US with a 25% target ACOS.
 
 **Skill flow**:
 1. Resolve the profile: `get_user_authorized_context` → find Demo US's `profileId`
 2. `month` = last full calendar month; `monthlyTarget` = `{"metric": "ACOS", "target": 25, "direction": "at_most"}`
 3. Run Steps 2-9
-4. Output the markdown report — in Chinese, since the user asked in Chinese
+4. Output the markdown report in the user's language
 
 ## Error Handling
 

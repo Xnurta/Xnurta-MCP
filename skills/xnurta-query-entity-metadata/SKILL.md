@@ -181,12 +181,11 @@ not product section names.
   AI vs Rule mode and then its dependent values. A field trimmed because the ad type does not
   support it is "unsupported / not exposed for this ad type", not "off".
 - Map `targetType` through the managed-group display guide and preserve the UI's selected objective
-  label in the user's language. For example, a Chinese answer for `targetType=2` says **保持订单稳定**.
-  "控制成本" is only the surrounding category, and a returned English label such as "Optimize
-  ROAS" must not replace the selected Chinese option.
+  label. For example, `targetType=2` is **Optimize ROAS**. "Drive efficiency" is only the
+  surrounding category and must not replace the selected product option.
 - For managed groups and their schedules, display `aiPersonality` as the numeric level only, for
-  example **AI 人格：4**. Do not replace or supplement it with `aiPersonalityText` labels such as
-  "激进", "略激进", or "Aggressive".
+  example **AI personality: 4**. Do not replace or supplement it with `aiPersonalityText` labels
+  such as "Aggressive".
 - Treat bid-range values according to `bidRangeType`: numeric amount vs percentage. Never call a
   displayed currency range a coefficient, and never infer that placement adjustment is on merely
   because bid range is on.
@@ -194,7 +193,7 @@ not product section names.
   names from the display guide. Raw keys/codes belong only in a separate technical appendix when
   explicitly requested.
 - `brandOptimization` is not an action-space category. Present it separately as Brand/non-brand/
-  competitor mode / 品牌/非品牌/竞品模式.
+  competitor mode.
 
 ### Reading rule-mode (RBA) rule configuration
 
@@ -228,8 +227,8 @@ Fields merged in: `audienceName`, `audienceType`, `proximityLevel`, `autoUpdate`
 
 **`audienceSegmentType` is NOT one of them, and is not on the campaign row at all.** Which of
 the two audience pools a campaign is bound to - a custom AMC audience
-(`SPONSORED_ADS_AMC` / 提高针对自定义 AMC 人群的竞价) or an Amazon-built one
-(`BEHAVIOR_DYNAMIC` / 提高针对亚马逊人群的竞价) - **cannot be read from here**. A live check
+(`SPONSORED_ADS_AMC`, increase bids on a custom AMC audience) or an Amazon-built one
+(`BEHAVIOR_DYNAMIC`, increase bids for Amazon-built audiences) - **cannot be read from here**. A live check
 against a bound campaign returned that field empty. It exists only as a filter on
 `entity: amcAudience`, echoed back on that entity's own rows.
 
@@ -247,22 +246,21 @@ it.
 - **The enums are raw, not display text** - the product has official labels for all of them,
   and those are what a user should see:
 
-| Field | Raw value | English | 中文 | 日本語 |
-|---|---|---|---|---|
-| `audienceType` | `target` | Rule-based Audience | 基于规则的受众 | ルールベースのオーディエンス |
-| | `lookalike` | Lookalike Audience | 相似受众 | 類似オーディエンス |
-| `proximityLevel` | `MOST_SIMILAR` | Most Similar | 最相似 | 最も類似 |
-| | `SIMILAR` | Similar | 相似 | 類似 |
-| | `BALANCED` | Balanced | 平衡 | バランス |
-| | `BROAD` | Broad | 广泛 | 広範 |
-| | `MOST_BROAD` | Most Broad | 最广泛 | 最も広範 |
-| `updateFrequence` | `daily` | Daily | 每日 | 毎日 |
-| | `weekly` | Weekly | 每周 | 毎週 |
-| | `biweekly` | Biweekly | 每两周 | 隔週 |
+| Field | Raw value | Product label |
+|---|---|---|
+| `audienceType` | `target` | Rule-based Audience |
+| | `lookalike` | Lookalike Audience |
+| `proximityLevel` | `MOST_SIMILAR` | Most Similar |
+| | `SIMILAR` | Similar |
+| | `BALANCED` | Balanced |
+| | `BROAD` | Broad |
+| | `MOST_BROAD` | Most Broad |
+| `updateFrequence` | `daily` | Daily |
+| | `weekly` | Weekly |
+| | `biweekly` | Biweekly |
 
-  The field itself is **Audience type / 受众类型**, **Proximity Level / 邻近度级别** and
-  **Auto update frequency / 自动更新频率**; the group is **Audience Configuration /
-  受众配置**. Note `proximityLevel` is upper snake case while `updateFrequence` is lower case -
+  The fields are **Audience type**, **Proximity Level**, and **Auto update frequency**; the group
+  is **Audience Configuration**. Note `proximityLevel` is upper snake case while `updateFrequence` is lower case -
   match on the raw value, don't normalize case and hope.
 
 - **`proximityLevel` only means anything when `audienceType` is `lookalike`.** Rule-based
@@ -399,7 +397,7 @@ Required `filters.asin`. **Two kinds of row come back in one list**, told apart 
 
 `rowCount` is the two kinds summed. **Keep both by default** - the product rows are
 recommended ASINs to target, and silently dropping them answers a narrower question than the
-user asked. Filter to one kind only when they asked for one kind ("给我推荐的品类"), and say
+user asked. Filter to one kind only when they asked for one kind (for example, "show recommended categories"), and say
 which kind you kept.
 
 ⚠️ **`canBeTargeted: false` rows come back too.** They are context for the category tree, not

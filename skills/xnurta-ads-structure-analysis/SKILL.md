@@ -5,7 +5,7 @@ description: >-
   (SP/SB/SD), marketplace/site, portfolio, weekday-vs-weekend, hour-of-day, or campaign size tiers (head vs long tail) — and diagnose where spend share
   and efficiency don't match (over-invested underperformers, under-invested strong performers).
   Optional sub-scenarios: SP deep-dive (manual vs auto targeting), SB new-to-brand focus. Use when
-  the user asks "我 SP/SB/SD 结构合理吗", "各站点谁强", "SB 新客到底行不行", "工作日和周末哪个好",
+  the user asks whether the SP/SB/SD mix is healthy, which marketplace is strongest, whether SB new-to-brand performs well, or whether weekdays outperform weekends,
   "structure analysis", "campaign type breakdown". Not for a single-entity trend/anomaly check (use
   xnurta-weekly-ads-report / xnurta-monthly-ads-report / a lighter ad-hoc analysis skill), product-level diagnosis
   (use xnurta-product-diagnosis), or search-term diagnosis (use xnurta-search-term-diagnosis).
@@ -30,11 +30,19 @@ Rewritten against the new tool's conventions from the start — carries forward 
 
 ## Output Language: Always Match the User, Never Hard-Code Chinese or English
 
-**The worked examples and output templates below are written in Chinese** (matching this product's primary customer base), but they are **structural illustrations, not literal text to copy verbatim**. Generate the actual report in whatever language the user asked in. When calling `get_ads_perf`, also set the `language` parameter (`zh`/`en`/`ja`) to match the customer's language. **`get_entity_metadata` has no `language` parameter** — it's not in that tool's documented parameter list. Localize its enum values using the returned `{field}Text` companion fields, or `xnurta-query-entity-metadata`'s own [`enum-i18n.md`](../xnurta-query-entity-metadata/references/enum-i18n.md) if a given enum has no `Text` companion — don't pass `language` to `get_entity_metadata` expecting it to have the same effect as on `get_ads_perf`.
+**The worked examples and output templates below are written in English, but they are structural
+illustrations, not literal text to copy verbatim.** Generate the actual report in the user's
+language. When calling `get_ads_perf`, also set the `language` parameter (`zh`/`en`/`ja`) to match
+the customer's language. **`get_entity_metadata` has no `language` parameter** — it's not in that
+tool's documented parameter list. Localize its enum values using the returned `{field}Text`
+companion fields, or `xnurta-query-entity-metadata`'s own
+[`enum-i18n.md`](../xnurta-query-entity-metadata/references/enum-i18n.md) if a given enum has no
+`Text` companion. Don't pass `language` to `get_entity_metadata` expecting it to have the same
+effect as on `get_ads_perf`.
 
 ## When to Use
 
-**Trigger phrases**: 结构分析, 结构合理吗, 类型对比, 站点对比, SP/SB/SD 结构, SB 新客, 工作日 周末, 头部活动, 长尾要不要清, 活动太碎, structure analysis, campaign type breakdown
+**Trigger phrases**: structure analysis, campaign type breakdown, marketplace comparison, SP/SB/SD mix, SB new-to-brand, weekday vs weekend, head campaigns, long-tail cleanup, fragmented campaigns
 
 **User roles**: ads managers, account managers, ads ops doing a deep-dive (not a periodic report)
 
@@ -61,7 +69,7 @@ Rewritten against the new tool's conventions from the start — carries forward 
 Always call `get_user_authorized_context` first to get the authorized `profiles` list, then apply exactly one of these cases:
 
 1. **The user named specific store(s)** → resolve the name(s) against the authorized list and query only the matching profile(s).
-2. **The user explicitly said "all stores" / "全账号" / equivalent** → query all authorized `profileIds`.
+2. **The user explicitly said "all stores" / "whole account" / equivalent** → query all authorized `profileIds`.
 3. **The user didn't name a store, and there's only one authorized profile** → use it directly — there's nothing to ask.
 4. **The user didn't name a store, and there are multiple authorized profiles**:
    - **5 or fewer** → you may default to using all of them.
@@ -91,7 +99,7 @@ Constraints you must respect and disclose:
 A keyword × placement structural view is also possible (`factEntity: "keywordPlacement"`, SP only, hourly, ≤7 days) — see `xnurta-query-ads-performance`'s hourly/AMS example. Note its AI metrics are placeholders (`AISpend`/`AISales` = 0, `AIACOS`/`AIROAS` = null), so don't put AI columns in that table.
 
 **`campaignTier`** — campaigns ranked by spend and cut into five bands, to see whether efficiency
-changes with campaign size ("头部活动是不是最差的", "长尾要不要清"). Not a native field: pull
+changes with campaign size (for example, whether head campaigns are worst or the long tail should be cleaned up). Not a native field: pull
 campaign-level window totals and band them client-side (Step 2 and "Campaign tiers" in Step 4).
 
 ## Sub-Scenarios
@@ -102,7 +110,7 @@ campaign-level window totals and band them client-side (Step 2 and "Campaign tie
 
 **`weekdayWeekend`**: use the `dayOfWeek` breakdown above, then bucket further into two groups (Mon-Fri vs Sat-Sun) rather than 7 separate days, if that's what the user actually asked ("workday vs weekend" is coarser than "which specific day of the week").
 
-**Companion breakdowns customers often ask for alongside `campaignType`**: the product's own "Campaign Type Analysis" dashboard template pairs the campaign-type view with a **targeting-type breakdown** (manual vs auto — covered here via `spDeepDive`) and a **search-term match-type breakdown** (broad/phrase/exact, etc.). The second one is **not covered by this skill** — `xnurta-search-term-diagnosis` (if installed) covers it (spend by match-type source). If a customer's ask naturally extends into match-type territory (e.g. "结构分析完了，再看看搜索词匹配类型"), say plainly that this skill's scope stops at campaign/targeting-type structure and point them to that skill instead of folding match-type analysis into this output.
+**Companion breakdowns customers often ask for alongside `campaignType`**: the product's own "Campaign Type Analysis" dashboard template pairs the campaign-type view with a **targeting-type breakdown** (manual vs auto — covered here via `spDeepDive`) and a **search-term match-type breakdown** (broad/phrase/exact, etc.). The second one is **not covered by this skill** — `xnurta-search-term-diagnosis` (if installed) covers it (spend by match-type source). If a customer's ask naturally extends into search-term match-type territory, say plainly that this skill's scope stops at campaign and targeting-type structure and point them to that skill instead of folding match-type analysis into this output.
 
 ## Shared Rules: Target ACOS, Thresholds, Managed Groups, Promotions
 
@@ -111,7 +119,7 @@ gets the same numbers whichever skill answers. Those two skills are separate ins
 them as "if installed", and when the user doesn't have them, say what to look at instead -
 never promise to run a skill that may not be there.
 
-- **One target ACOS.** Use the store-wide target the user gives (ask "整店希望 ACOS 控制在多少"
+- **One target ACOS.** Use the store-wide target the user gives (ask what ACOS the store should target
   when a threshold depends on it); without one, use the store's own ACOS for the period and say
   so where the threshold is first used. Never use managed groups' `targetAcos` as thresholds -
   one store can have dozens, from single digits to over 200%, and rank-push or launch groups set
@@ -317,67 +325,67 @@ answer".
 ### markdown mode
 
 ```markdown
-# 广告结构分析 · {profile_name}
-**维度**：{campaignType / marketplace / portfolio / dayOfWeek / hourOfDay / campaignTier}
-**周期**：{dateStart} ~ {dateEnd}
+# Ads Structure Analysis · {profile_name}
+**Dimension**: {campaignType / marketplace / portfolio / dayOfWeek / hourOfDay / campaignTier}
+**Period**: {dateStart} ~ {dateEnd}
 {If data may be incomplete due to T+2 delay, or a section is based on a partial sample, note it here}
 
-## 一、结构占比
+## 1. Structural share
 
-| 分段 | 花费占比 | 销售额占比 | ACOS | ROAS | CPA |
+| Segment | Spend share | Sales share | ACOS | ROAS | CPA |
 |---|---|---|---|---|---|
 | SP | {pct} | {pct} | {acos}% | {roas} | {cpa} |
 | SB | ... | ... | ... | ... | ... |
 | SD | ... | ... | ... | ... | ... |
 
-{仅当 includeTrend=true 时展示——按周展示每个分段的 ACOS/CPA 走势，不只是期末快照}
+{Show only when includeTrend=true: weekly ACOS/CPA for each segment, not only the ending snapshot.}
 
-### 分段周度趋势（ACOS / CPA）
+### Weekly segment trend (ACOS / CPA)
 
-| 分段 | 第1周 | 第2周 | 第3周 | 第4周 | ... |
+| Segment | Week 1 | Week 2 | Week 3 | Week 4 | ... |
 |---|---|---|---|---|---|
 | SP · ACOS | {pct}% | ... | ... | ... | ... |
 | SP · CPA | {value} | ... | ... | ... | ... |
 | SB · ACOS | ... | ... | ... | ... | ... |
 | SB · CPA | ... | ... | ... | ... | ... |
 
-{如果某个分段的趋势中途有明显变化，单独点出来，不要让期末快照把这个变化平均掉}
+{Call out any material mid-period change instead of letting the ending snapshot average it away.}
 
-## 二、结构失衡诊断
+## 2. Structural imbalance diagnosis
 
-- **过度投入/表现不佳**：{segment} — 花费占比 {pct}，销售额占比仅 {pct}，ACOS 比账户均值差 {pct}
-- **投入不足/表现优秀**：{segment} — ...
+- **Overinvested / underperforming**: {segment} — {pct} of spend, only {pct} of sales, ACOS {pct} worse than account average
+- **Underinvested / outperforming**: {segment} — ...
 
 {Segments below the 2% spend-share floor: mention briefly as "too small to be structurally significant," don't over-analyze}
 
-{仅当 breakdownBy=campaignTier：}
+{Only when breakdownBy=campaignTier:}
 
-### 活动分层（按花费五档）
+### Campaign tiers (five spend bands)
 
-| 档位 | 活动数 | 花费占比 | ACOS | CPC | CVR | 客单价 |
+| Tier | Campaigns | Spend share | ACOS | CPC | CVR | Average order value |
 |---|---|---|---|---|---|---|
-| A（头部） | ... | ... | ... | ... | ... | ... |
+| A (Head) | ... | ... | ... | ... | ... | ... |
 | ... | ... | ... | ... | ... | ... | ... |
-| E（长尾） | ... | ... | ... | ... | ... | ... |
+| E (Long tail) | ... | ... | ... | ... | ... | ... |
 
-**形态**：{平坦 / 头部最差 / 长尾最差 / 中间最差 / 无法判断（活动少于 5 个 / 有效档位不足 3 个 / 有档位花费占比 ≥2% 却没有销售额）}，极差 {x}pt → {对应动作}
-{有花费但没出单的档位单独列一行：档位、花费、花费占比}
-{若最好和最差的有效档分别被不同用途主导（各占本档花费 ≥60%）：写“差距主要来自活动用途（如品牌词 vs 加投词），不是活动大小”，形态只作背景，并按用途重新切一次}
-{空档或零销售档在表中标“—”，不参与极差和最差档判断}
-**碎片化**：每个有花费的活动月均点击 {n} 次（{充足 / 偏少 / 过少}）；启用但零花费的活动 {m} 个（占启用活动 {pct}），待排查原因（新建、未到开始日期、缺货或不可投放、出价或预算过低），不直接建议归档
+**Shape**: {flat / head worst / long tail worst / middle worst / indeterminate because fewer than 5 campaigns, fewer than 3 valid tiers, or a tier has at least 2% spend but no sales}; spread {x}pt -> {action}
+{List any tier with spend but no orders separately with tier, spend, and spend share.}
+{If the best and worst valid tiers are each dominated by different campaign purposes at 60% or more of tier spend, state that the gap is mainly about campaign purpose, not campaign size; treat tier shape as context and rerun by purpose.}
+{Show empty or zero-sales tiers as "—" and exclude them from spread and worst-tier classification.}
+**Fragmentation**: campaigns with spend average {n} monthly clicks ({sufficient / limited / too few}); {m} enabled campaigns have zero spend ({pct} of enabled campaigns). Investigate launch date, future start date, inventory/eligibility, bid, or budget before recommending archive.
 
-## 三、{子场景标题，若有 subScenario}
+## 3. {Sub-scenario title, when subScenario is present}
 
-{spDeepDive: manual vs auto targeting 对比表；sbNtb: NTB 指标专区；weekdayWeekend: 工作日 vs 周末对比表}
+{spDeepDive: manual vs auto targeting table; sbNtb: NTB section; weekdayWeekend: weekday vs weekend table}
 
-## 四、结构调整建议
+## 4. Structural recommendations
 
 1. **{action}** {target}
-   - 依据：{data}
+   - Evidence: {data}
 2. ...
 
 ---
-_生成时间：{timestamp} · 数据源：Xnurta MCP · Skill: xnurta-ads-structure-analysis v{version}_
+_Generated: {timestamp} · Data source: Xnurta MCP · Skill: xnurta-ads-structure-analysis v{version}_
 ```
 
 ### structured_report mode
@@ -411,13 +419,13 @@ ratios are `null`, never 0. Units: `acos` and `cvr` in percent (×100, like the 
 ## Example Call
 
 **User input**:
-> 看下 Demo US 最近 30 天 SP/SB/SD 结构合不合理
+> Analyze the SP/SB/SD structure for Demo US over the last 30 days.
 
 **Skill flow**:
 1. Resolve the profile: `get_user_authorized_context` → find Demo US's `profileId`
 2. `breakdownBy = campaignType`, window = trailing 30 days ending yesterday
 3. Run Steps 2-6
-4. Output the markdown report — in Chinese, since the user asked in Chinese
+4. Output the markdown report in the user's language
 
 ## Error Handling
 

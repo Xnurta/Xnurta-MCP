@@ -4,8 +4,8 @@ description: >-
   Create new Amazon Sponsored Products campaigns in bulk through `create_sp_sb_campaign` -
   campaign, ad groups, promoted products, and either auto targeting, keywords, or product
   targets, plus negatives, placement adjustments and an optional audience. Use when the
-  user wants to build / launch / set up a new campaign - 新建广告活动 / 建一个自动广告 /
-  开个手动词的活动 / 按这批 ASIN 建活动. Creates the campaign itself; it is NOT for editing
+  user wants to build, launch, or set up a new campaign, create an automatic campaign, create
+  a manual-keyword campaign, or build campaigns for a set of ASINs. Creates the campaign itself; it is NOT for editing
   existing ones (use xnurta-edit-ads), for AI managed groups (use xnurta-create-ai-group), or
   for reading data (use xnurta-query-ads-performance / xnurta-query-entity-metadata).
 metadata:
@@ -77,7 +77,7 @@ rest".
 
 ## Pick the targeting type first - campaign and ad group together
 
-The console shows one 投放类型 / Targeting radio on the campaign, but the request carries a
+The console shows one Targeting radio on the campaign, but the request carries a
 second `targetingType` on each ad group, and the two must agree.
 
 A campaign is `targetingType: "auto"` or `"manual"`, and an ad group is
@@ -198,11 +198,11 @@ and send `"portfolioId": 123456789012345`, not `"123456789012345"`.
 The user may be looking at the creation page while talking to you. These parts of it have no
 equivalent here - say so and point at the console rather than approximating:
 
-1. **从词库添加 / Add from keyword list.** The negatives panels have an "Enter list" tab and
+1. **Add from keyword list.** The negatives panels have an "Enter list" tab and
    an "Add from keyword list" tab. Only the first has an equivalent: send the words in
-   `negativeKeywords`. **Keyword lists (词库) are not supported by MCP at all** - you cannot
+   `negativeKeywords`. **Keyword lists are not supported by MCP at all** - you cannot
    reference one, and you cannot enumerate its contents to paste them in.
-2. **自动定向 → 设置默认出价 / Automatic targeting → Set default bid.** The console lets an
+2. **Automatic targeting -> Set default bid.** The console lets an
    auto campaign run on one default bid instead of per-group bids. This tool always requires
    all four groups in `targetBid`; there is no "just use the default" mode. If the user wants
    a single bid, send the same value four times and tell them that is what you did.
@@ -268,12 +268,12 @@ things in your answer".
 
 ## Do not guess - ask
 
-- **"建个自动广告"** - auto targeting, or a manual campaign they will manage themselves? These
+- **"Create an automatic campaign"** - auto targeting, or a manual campaign they will manage themselves? These
   are different `targetingType`s and cannot be converted afterwards through this tool.
 - **budget** - daily budget. If the user names a monthly figure, ask rather than dividing.
-- **"用这些词"** - as keywords (they bid on search terms) or as product targets? Different
+- **"Use these terms"** - as keywords (they bid on search terms) or as product targets? Different
   child list, different ad group dimension.
-- **"先别花钱"** - create `paused`. Say that you did.
+- **"Do not spend yet"** - create `paused`. Say that you did.
 - Anything the tool cannot do - SB, SD, adding ad groups to an **existing** campaign, SD
   creatives - say so and point at the console. Do not approximate it with something else.
 

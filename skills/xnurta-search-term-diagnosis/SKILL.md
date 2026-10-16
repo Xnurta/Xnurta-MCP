@@ -6,7 +6,7 @@ description: >-
   non-brand, zero-order waste with negative candidates, harvest candidates for exact match,
   and fragmented exact keywords - with fixed, reproducible rules and thresholds derived from
   the store's own order value and target ACOS. Read-only; execution goes to xnurta-edit-ads.
-  Use when the user asks "上个月钱花哪了", "帮我找一批该否的词", "自动广告里哪些词值得单独投",
+  Use when the user asks where search-term spend went last month, requests negative candidates, or wants to know which automatic-targeting terms deserve dedicated targeting,
   "search term analysis", "negative keyword candidates", "harvest keywords". Not for
   trend recaps (xnurta-weekly-ads-report / xnurta-monthly-ads-report), campaign-type /
   marketplace structure (xnurta-ads-structure-analysis) or ASIN health
@@ -15,7 +15,7 @@ metadata:
   version: 1.0.0
 ---
 
-# Search Term Diagnosis (搜索词流量结构诊断)
+# Search Term Diagnosis
 
 ## Scope: a read-only orchestration skill
 
@@ -40,8 +40,8 @@ No MCP tool of its own. It reads with two tools and hands execution to one skill
 
 ## Output language
 
-Examples are in Chinese because most customers are. Answer in the user's language and pass
-`language` to `get_ads_perf` to match.
+The skill documentation and examples are written in English. Answer in the user's language and
+pass the matching `language` value to `get_ads_perf` so returned display text is consistent.
 
 ## Principles
 
@@ -83,7 +83,7 @@ three inputs, the first two **pre-filled by you**:
    brand (spacing, other scripts), and close misspellings. Let the customer tick them and
    add more, including competitor brand terms if they want. Never treat an unconfirmed
    candidate as a brand term.
-2. **Target ACOS** - one number for the whole store: "你整店希望 ACOS 控制在多少？". If the
+2. **Target ACOS** - one number for the whole store: ask what ACOS the store should target. If the
    customer has none, use the store's ACOS for the period and say in the first line of the
    answer that the thresholds use it and can be recomputed. **Do not use managed-group
    target ACOS as the threshold** - stores have dozens of groups with targets that vary
@@ -115,20 +115,20 @@ so the conversation and the file always agree.
 
 Lead with the scope line, then five short parts:
 
-1. **钱花在哪 (V1)**: a small table - core (≥3 orders), potential (1-2), zero-order above the
+1. **Spend distribution (V1)**: a small table - core (≥3 orders), potential (1-2), zero-order above the
    one-order target spend, zero-order small terms - with spend, share and ACOS; keyword and
    ASIN traffic shown separately where it matters. Zero-order small terms are one line with
    their amount; never list them term by term. Then add **where small unconverted spend comes
    from**, measured at search term x match type (`data-retrieval.md`) and named as such -
-   e.g. "没出单的小额流量（按搜索词 × 匹配方式计）里，48% 来自自动广告的宽泛匹配" - plus the top
+   for example, "48% of low-spend, zero-order traffic by search term and match type came from broad automatic targeting" - plus the top
    campaigns when search-term x campaign detail was pulled. Point to where to look (harvest the
    good terms there, check its negatives, split it out to watch it); don't recommend pausing a
    match type on this number alone.
-2. **品牌 / 公域 (V2)**: brand share of the listed keyword spend (say "已列出的关键词花费"), brand
+2. **Branded / non-branded (V2)**: brand share of the listed keyword spend, brand
    ACOS, non-brand ACOS and the ratio,
    and the direction (`classification.md` -> V2). Skip V2 with a reason if the customer
    declined to give brand terms.
-3. **零单浪费 (V3)**, in three groups (`classification.md` -> V3):
+3. **Zero-order waste (V3)**, in three groups (`classification.md` -> V3):
    - **zero-order exact keywords** - your own exact keywords with no orders and spend above
      the threshold: pause them (no bid advice);
    - **negative candidates** - count, spend, top 10, each with its action (negative exact for
@@ -139,19 +139,19 @@ Lead with the scope line, then five short parts:
 
    Brand terms, the store's own ASINs and whitelisted roots are held back and counted at the
    end.
-4. **扶正候选 (V4)**: count, orders, top 10 with source match type. Mention managed groups whose
+4. **Harvest candidates (V4)**: count, orders, top 10 with source match type. Mention managed groups whose
    harvesting is off.
-5. **投放碎片 (V5)**: enabled exact keywords with ≤3 orders in 30 days - count, zero-order
+5. **Targeting fragmentation (V5)**: enabled exact keywords with ≤3 orders in 30 days - count, zero-order
    count, spend - and the suggestion to fold them back into auto / broad for mature products.
 
-End with: "要完整清单文件吗？要执行哪些？"
+End by offering the complete list and asking which candidates the user wants to act on.
 
 ### Step 5 - Export and hand-off
 
 - **Export** (only if asked): four sheets from the saved file - all tagged search terms,
   negative candidates, harvest candidates, fragmented keywords. Counts and spend must match the
   answer exactly.
-- **Execution**: this skill writes nothing. For "把这些否了" / "这些加成精准" / "暂停这个词",
+- **Execution**: this skill writes nothing. For requests to negate terms, add exact keywords, or pause a keyword,
   hand the rows - with campaign type, campaign and ad group from data-retrieval call 10 - to
   `xnurta-edit-ads` and follow its resolution, preview and confirmation rules. Its route
   limits decide what is possible:
@@ -166,20 +166,34 @@ End with: "要完整清单文件吗？要执行哪些？"
 
 ## Example
 
-> **客户**：看看上个月搜索词，钱花哪了。
+> **Customer**: Review last month's search terms and show where the spend went.
 >
-> **AI**：先确认口径：① 品牌词：商品信息里的品牌名是 “Acme”，搜索词里还出现了 “acme pro”“akme”——这两个算你们的品牌词吗？② 目标 ACOS：你整店希望 ACOS 控制在多少？没有的话，我先按店铺近 30 天的实际 ACOS 32% 算。③ 产品是成熟期还是新品推广期？
+> **AI**: Before calculating, please confirm three inputs. The product brand is Acme; the search
+> terms also contain "acme pro" and "akme". Should both count as brand terms? What store-wide
+> target ACOS should I use? If none is set, I can use the store's actual 30-day ACOS of 32%.
+> Finally, is the product mature or in launch?
 >
-> **客户**：都算；目标按 35%；成熟期。
+> **Customer**: Count both, use a 35% target, and treat it as mature.
 >
-> **AI**：9/10–10/9（最近 3 天的订单可能还没归因完，未计入）搜索词花费 $18,420：
-> - **钱花在哪**：出单 ≥3 的核心词占 41%、ACOS 22%；零单、且已花超过一单目标花费（$14）的词占 13%；另有 24% 花在大量零单小词上，其中 52% 来自自动广告的宽泛匹配。
-> - **品牌 / 公域**：品牌词占关键词花费 12%、ACOS 9%；非品牌 ACOS 是品牌的 3.4 倍——主要靠公域。
-> - **零单浪费**：你在投的精准词里有 7 个 0 单、合计 $260，例如 “water jug” 花了 $41 → 建议暂停；否词候选 63 个、$2,410，例如 “replacement filter cartridge” 花了 $96、0 单 → 精准否定，其中 21 个在已开“添加否定定向”的托管组里，已标出；另有 4 个零单词本身也是你在投的精准词，没有列为否词。
-> - **扶正候选 18 个**：例如 “water filter pitcher” 在自动广告里 30 天 6 单、ACOS 24%，还没有单独精准投放。
-> - **投放碎片**：启用中的精准词 310 个，30 天 ≤3 单的 190 个，合计只花 $640。
+> **AI**: Sep 10-Oct 9 search-term spend was $18,420. The most recent three days are excluded
+> because orders may not be fully attributed.
+> - **Spend distribution**: Core terms with at least three orders accounted for 41% of spend at
+>   22% ACOS. Zero-order terms above the $14 one-order target-spend threshold accounted for 13%.
+>   Another 24% went to many small zero-order terms; 52% of that traffic came from broad automatic
+>   targeting.
+> - **Branded / non-branded**: Brand terms accounted for 12% of keyword spend at 9% ACOS.
+>   Non-brand ACOS was 3.4 times brand ACOS, so the account relies mainly on non-brand traffic.
+> - **Zero-order waste**: Seven active exact keywords had no orders and spent $260 in total. For
+>   example, "water jug" spent $41 and is a pause candidate. There were 63 negative candidates
+>   with $2,410 spend; "replacement filter cartridge" spent $96 with no orders and is a negative
+>   exact candidate. Twenty-one candidates belong to managed groups with Add negative targets on.
+>   Four zero-order terms are also active exact keywords and were withheld from the negative list.
+> - **Harvest candidates**: 18 terms. For example, "water filter pitcher" generated six orders
+>   in 30 days at 24% ACOS from automatic targeting and has no dedicated exact keyword.
+> - **Targeting fragmentation**: Of 310 enabled exact keywords, 190 generated at most three orders
+>   in 30 days and spent only $640 in total.
 >
-> 要完整清单文件吗？要执行哪些？
+> Would you like the complete list, and which candidates should be handed off for execution?
 
 ## Data boundaries
 

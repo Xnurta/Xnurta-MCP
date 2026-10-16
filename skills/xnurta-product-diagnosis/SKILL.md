@@ -5,7 +5,7 @@ description: >-
   a lifecycle tier (star / core / long-tail / new / declining), compare sibling variants under a
   parent ASIN, produce a diagnostic card for flagged underperformers (inventory/eligibility/buy-box
   issues, correlated operation-log changes), and give keep/optimize/cut recommendations. Use when
-  the user asks "我哪些 ASIN 有问题", "变体谁在拖后腿", "新品该不该继续投", "product diagnosis",
+  the user asks which ASINs have problems, which variant is dragging performance down, whether a new product should keep advertising, or requests a product diagnosis,
   "ASIN health check". Not for account-wide structural share analysis (use xnurta-ads-structure-analysis)
   or periodic WoW/MoM recaps (use xnurta-weekly-ads-report / xnurta-monthly-ads-report).
 metadata:
@@ -30,11 +30,22 @@ Rewritten against the new tool's conventions from the start — carries forward 
 
 ## Output Language: Always Match the User, Never Hard-Code Chinese or English
 
-**The worked examples and output templates below are written in Chinese** (matching this product's primary customer base), but they are **structural illustrations, not literal text to copy verbatim**. Generate the actual report in whatever language the user asked in. When calling `get_ads_perf`, also set the `language` parameter (`zh`/`en`/`ja`) to match the customer's language. **`get_entity_metadata` has no `language` parameter** — it's not in that tool's documented parameter list. Localize its enum values (e.g. `asinInventoryStatus`, `asinSpEligibilityStatus`) using the returned `{field}Text` companion fields, or `xnurta-query-entity-metadata`'s **own** [`enum-i18n.md`](../xnurta-query-entity-metadata/references/enum-i18n.md) if a given enum has no `Text` companion — that tool's enum-i18n file, not `xnurta-query-ads-performance`'s, since the two don't cover an identical field set. Only fall back to `xnurta-query-ads-performance`'s [`enum-i18n.md`](../xnurta-query-ads-performance/references/enum-i18n.md) for fields that are actually `get_ads_perf` fields (e.g. when this skill's Step 2a/2b calls need enum labels). Don't pass `language` to `get_entity_metadata` expecting it to have the same effect as on `get_ads_perf`.
+**The worked examples and output templates below are written in English, but they are structural
+illustrations, not literal text to copy verbatim.** Generate the actual report in the user's
+language. When calling `get_ads_perf`, also set the `language` parameter (`zh`/`en`/`ja`) to match
+the customer's language. **`get_entity_metadata` has no `language` parameter** — it's not in that
+tool's documented parameter list. Localize its enum values (e.g. `asinInventoryStatus`,
+`asinSpEligibilityStatus`) using the returned `{field}Text` companion fields, or
+`xnurta-query-entity-metadata`'s **own** [`enum-i18n.md`](../xnurta-query-entity-metadata/references/enum-i18n.md)
+if a given enum has no `Text` companion — that tool's enum-i18n file, not
+`xnurta-query-ads-performance`'s, since the two don't cover an identical field set. Only fall back
+to `xnurta-query-ads-performance`'s [`enum-i18n.md`](../xnurta-query-ads-performance/references/enum-i18n.md)
+for fields that are actually `get_ads_perf` fields. Don't pass `language` to
+`get_entity_metadata` expecting it to have the same effect as on `get_ads_perf`.
 
 ## When to Use
 
-**Trigger phrases**: 商品诊断, 哪些 ASIN 有问题, 变体对比, 新品该不该投, product diagnosis, ASIN health
+**Trigger phrases**: product diagnosis, ASIN health, underperforming ASINs, variant comparison, new-product advertising decision
 
 **User roles**: ads managers, account managers doing a product-level deep-dive
 
@@ -61,7 +72,7 @@ Rewritten against the new tool's conventions from the start — carries forward 
 Always call `get_user_authorized_context` first to get the authorized `profiles` list, then apply exactly one of these cases:
 
 1. **The user named specific store(s)** → resolve the name(s) against the authorized list and query only the matching profile(s).
-2. **The user explicitly said "all stores" / "全账号" / equivalent** → query all authorized `profileIds`.
+2. **The user explicitly said "all stores" / "whole account" / equivalent** → query all authorized `profileIds`.
 3. **The user didn't name a store, and there's only one authorized profile** → use it directly — there's nothing to ask.
 4. **The user didn't name a store, and there are multiple authorized profiles**:
    - **5 or fewer** → you may default to using all of them.
@@ -82,7 +93,7 @@ gets the same numbers whichever skill answers. Those two skills are separate ins
 them as "if installed", and when the user doesn't have them, say what to look at instead -
 never promise to run a skill that may not be there.
 
-- **One target ACOS.** Use the store-wide target the user gives (ask "整店希望 ACOS 控制在多少"
+- **One target ACOS.** Use the store-wide target the user gives (ask what ACOS the store should target
   when a threshold depends on it); without one, use the store's own ACOS for the period and say
   so where the threshold is first used. Never use managed groups' `targetAcos` as thresholds -
   one store can have dozens, from single digits to over 200%, and rank-push or launch groups set
@@ -201,11 +212,11 @@ Either way, when the list is long: split into chunks for the `in` filter rather 
 | Long-tail | the rest |
 
 Classify each analysis entity (a child ASIN under `granularity=asin`/`variant`, or a parent ASIN under `granularity=parentAsin` — don't revert to child-level classification just because the underlying rows started as child-ASIN data) into exactly one tier:
-- **新品 (New)**: identified in Step 2c (opened within the analysis window). Takes priority over other tiers — a new product's low volume is expected, not "long-tail" or "declining."
-- **濒死 (Declining)**: ad orders (`Conversions`) fell to 70% or less of the prior period's, from at least 3 (Step 2b). Use the same join-by-ID, zero-denominator-aware period-comparison discipline as [xnurta-query-ads-performance's Period-over-Period and Top Movers example](../xnurta-query-ads-performance/references/example-period-comparison-top-movers.md) — an ASIN with 0 orders in both periods is "flat/no activity," not "declining." Check the comparison window for a promotion first (see "Shared Rules").
-- **明星 (Star)**: in the top 50% of spend (the prefix rule above), **and** ACOS at or below the target ACOS — meaningfully contributing **and** performing well.
-- **腰部 (Core)**: the rest of the top 80% of spend (same prefix rule) — the bulk of a healthy catalog, not itself a finding.
-- **长尾 (Long-tail)**: everything below that — low-volume but not necessarily unhealthy.
+- **New**: identified in Step 2c (opened within the analysis window). Takes priority over other tiers — a new product's low volume is expected, not "long-tail" or "declining."
+- **Declining**: ad orders (`Conversions`) fell to 70% or less of the prior period's, from at least 3 (Step 2b). Use the same join-by-ID, zero-denominator-aware period-comparison discipline as [xnurta-query-ads-performance's Period-over-Period and Top Movers example](../xnurta-query-ads-performance/references/example-period-comparison-top-movers.md) — an ASIN with 0 orders in both periods is "flat/no activity," not "declining." Check the comparison window for a promotion first (see "Shared Rules").
+- **Star**: in the top 50% of spend (the prefix rule above), **and** ACOS at or below the target ACOS — meaningfully contributing **and** performing well.
+- **Core**: the rest of the top 80% of spend (same prefix rule) — the bulk of a healthy catalog, not itself a finding.
+- **Long-tail**: everything below that — low-volume but not necessarily unhealthy.
 
 **No fixed money cutoffs**: the tiers use spend shares, order counts and the target ACOS; zero-order checks use `T` (see "Shared Rules"), so the rules hold in any currency.
 
@@ -218,16 +229,16 @@ For the anchored parent's child ASINs (from Step 2a/b, filtered to that `parent_
 For each flagged entity (ASIN or parent ASIN — see the parent-mode adjustments to 2c/2d/2e above; don't drop back to child-only fields under `granularity=parentAsin`), assemble:
 - **Inventory/eligibility status** (Step 2d): out-of-stock (`asinInventoryStatus`/`parentAsinInventoryStatus`), lost ad-type eligibility, or — child level only, no parent equivalent exists — deleted (`asinIsDelete`) — these can fully explain a sales collapse on their own and should be surfaced before anything else.
 - **Buy Box / returns signal** (Step 2a): a `BuyBoxPercentage` drop or elevated `CustomerReturns` alongside declining sales is a strong non-advertising explanation — flag it as such rather than assuming the cause is bid/budget-related.
-- **Correlated operation-log changes** (Step 2e): bid/budget/status changes on the campaigns/adGroups containing this ASIN's product ads in the same window — **not** changes on the ASIN itself (per Step 2e, `get_operation_log` can't be scoped to a single `productAd`/ASIN, only to `campaign`/`adGroup`). Label this explicitly in the diagnostic card (e.g. "非 ASIN 专属——该 campaign/adGroup 下的操作记录") so it isn't read as ASIN-specific evidence. **Correlation, not causation** — same discipline as the report skills: state what changed and when, don't claim it caused the decline unless the timing and magnitude clearly line up, and weigh that correlation more cautiously here given the change wasn't even necessarily on this specific product ad.
+- **Correlated operation-log changes** (Step 2e): bid/budget/status changes on the campaigns/adGroups containing this ASIN's product ads in the same window — **not** changes on the ASIN itself (per Step 2e, `get_operation_log` can't be scoped to a single `productAd`/ASIN, only to `campaign`/`adGroup`). Label this explicitly as **not ASIN-specific: operations on the containing campaign/ad group** so it isn't read as ASIN-specific evidence. **Correlation, not causation** — same discipline as the report skills: state what changed and when, don't claim it caused the decline unless the timing and magnitude clearly line up, and weigh that correlation more cautiously here given the change wasn't even necessarily on this specific product ad.
 
 If none of the above turns up anything, say so plainly ("no inventory/eligibility/buy-box issue found, no correlated operation-log change found") rather than forcing a narrative onto an unexplained decline.
 
 ### Step 6 · Recommendations (Keep / Optimize / Cut)
 
 Derive one verdict per flagged ASIN (and optionally per healthy-tier ASIN if the user wants a full-catalog verdict, not just the problems):
-- **保 (Keep)**: Star or healthy Core tier — no action needed, or note it as a candidate for the *other* skill (`xnurta-ads-structure-analysis`) if there's a structural budget-reallocation angle.
-- **优 (Optimize)**: Declining or underperforming Core/Long-tail with a fixable driver identified in Step 5 (e.g. restock, buy-box recovery, a managed-group setting) — action + evidence. Bid / budget advice follows "Shared Rules" (group levers for managed campaigns, no numbers). For traffic-side problems, suggest running `xnurta-search-term-diagnosis` (if installed) scoped to this product.
-- **撤 (Cut)**: zero orders with spend >= `T` in **both** this and the prior period, and no fixable driver found; or long-tail with negligible volume and no growth signal — action + evidence.
+- **Keep**: Star or healthy Core tier — no action needed, or note it as a candidate for the *other* skill (`xnurta-ads-structure-analysis`) if there's a structural budget-reallocation angle.
+- **Optimize**: Declining or underperforming Core/Long-tail with a fixable driver identified in Step 5 (e.g. restock, buy-box recovery, a managed-group setting) — action + evidence. Bid / budget advice follows "Shared Rules" (group levers for managed campaigns, no numbers). For traffic-side problems, suggest running `xnurta-search-term-diagnosis` (if installed) scoped to this product.
+- **Cut**: zero orders with spend >= `T` in **both** this and the prior period, and no fixable driver found; or long-tail with negligible volume and no growth signal — action + evidence.
 
 **Every recommendation must have**: action + target ASIN + evidence (data), same requirement as the other skills in this family.
 
@@ -235,7 +246,7 @@ Derive one verdict per flagged ASIN (and optionally per healthy-tier ASIN if the
 
 When `profileIds` spans multiple stores:
 - All monetary metrics from `get_ads_perf` auto-aggregate to **USD**, **except** `asin.asinPrice_` (if ever used) and ASIN-entity pricing in `get_entity_metadata`, which stay local currency per-row — label dollar amounts "(USD)" explicitly elsewhere.
-- Add `profile.profileId_`/`profile.profileName_` to Step 2a/2b's `select` when `profileIds` spans multiple stores, so a ranking/lifecycle-tier call can attribute each ASIN to its store — the same ASIN can exist under multiple stores with different performance. **This attribution must actually reach the output**: add a 店铺/Store column to Step 3's ranking table (and the markdown template's table below) whenever `profileIds` has more than one entry, and add `profileId`/`profileName` to `structured_report`'s `ranking` entries in the same case — don't pull the per-store `select` fields in Step 2a/2b only to drop them before presenting.
+- Add `profile.profileId_`/`profile.profileName_` to Step 2a/2b's `select` when `profileIds` spans multiple stores, so a ranking/lifecycle-tier call can attribute each ASIN to its store — the same ASIN can exist under multiple stores with different performance. **This attribution must actually reach the output**: add a Store column to Step 3's ranking table (and the markdown template's table below) whenever `profileIds` has more than one entry, and add `profileId`/`profileName` to `structured_report`'s `ranking` entries in the same case — don't pull the per-store `select` fields in Step 2a/2b only to drop them before presenting.
 
 ## Output Format
 
@@ -262,50 +273,50 @@ answer".
 ### markdown mode
 
 ```markdown
-# 商品诊断 · {profile_name}
-**维度**：{asin / parentAsin / variant}　**范围**：{topN / all / 指定ASIN / 仅问题商品}
-**周期**：{dateStart} ~ {dateEnd}
+# Product Diagnosis · {profile_name}
+**Granularity**: {asin / parentAsin / variant}  **Scope**: {topN / all / specified ASINs / underperformers only}
+**Period**: {dateStart} ~ {dateEnd}
 {If data may be incomplete due to T+2 delay, or a section is based on a partial sample, note it here}
-{若 profileIds 涉及多个店铺，标题的 {profile_name} 不要写死单个店铺名——改成店铺列表或 "{N}个店铺"，具体归因见下方排名表的店铺列}
+{When profileIds covers multiple stores, use the store list or "{N} stores" in the title and attribute rows in the Store column below.}
 
-## 一、商品排名表
+## 1. Product ranking
 
-{列名用 "ASIN" 还是 "Parent ASIN" 取决于 granularity：asin/variant 用 "ASIN"，parentAsin 用 "Parent ASIN"——不要不管 granularity 都固定写 "ASIN"}
-{仅当 profileIds 涉及多个店铺时才加"店铺"列——单店铺场景不要加这一列造成冗余}
+{Use "ASIN" for asin/variant granularity and "Parent ASIN" for parentAsin granularity.}
+{Add the Store column only when profileIds covers multiple stores.}
 
-| ASIN / Parent ASIN | 店铺（仅多店铺时） | 花费 | 广告销售额 | ACOS | 总销售额 | TACOS | 订单数 / 转化数 | 分层 |
+| ASIN / Parent ASIN | Store (multi-store only) | Spend | Ad sales | ACOS | Total sales | TACOS | Orders / conversions | Tier |
 |---|---|---|---|---|---|---|---|---|
-| ... | ... | ... | ... | ... | ... | ... | ... | 明星/腰部/长尾/新品/濒死 |
+| ... | ... | ... | ... | ... | ... | ... | ... | Star / Core / Long-tail / New / Declining |
 
-## 二、生命周期分层概览
+## 2. Lifecycle-tier overview
 
-- 明星：{N} 个，贡献 {pct} 花费 / {pct} 销售额
-- 腰部：{N} 个
-- 长尾：{N} 个
-- 新品：{N} 个（本周期内上架）
-- 濒死：{N} 个 — 需要关注
+- Star: {N}, contributing {pct} of spend / {pct} of sales
+- Core: {N}
+- Long-tail: {N}
+- New: {N}, launched within the analysis period
+- Declining: {N}, needs attention
 
-## 三、变体对比（若 granularity=variant）
+## 3. Variant comparison (when granularity=variant)
 
-| 变体 ASIN | 花费占比 | ACOS | Buy Box % |
+| Variant ASIN | Spend share | ACOS | Buy Box % |
 |---|---|---|---|
 | ... | ... | ... | ... |
 
-## 四、单品诊断卡（濒死 / 问题商品）
+## 4. Product diagnostic cards (Declining / underperforming products)
 
 ### {ASIN}
-- 库存/资格状态：{...}
-- Buy Box / 退货信号：{...}
-- 关联操作记录（非 ASIN 专属，campaign/adGroup 层面）：{...，标注为关联而非确定因果}
+- Inventory / eligibility: {...}
+- Buy Box / return signal: {...}
+- Correlated operation history (not ASIN-specific; campaign/ad-group level): {...; label as correlation, not proven causation}
 
-## 五、优化建议
+## 5. Recommendations
 
-1. **{保/优/撤}** {ASIN}
-   - 依据：{data}
+1. **{Keep / Optimize / Cut}** {ASIN}
+   - Evidence: {data}
 2. ...
 
 ---
-_生成时间：{timestamp} · 数据源：Xnurta MCP · Skill: xnurta-product-diagnosis v{version}_
+_Generated: {timestamp} · Data source: Xnurta MCP · Skill: xnurta-product-diagnosis v{version}_
 ```
 
 ### structured_report mode
@@ -335,13 +346,13 @@ _生成时间：{timestamp} · 数据源：Xnurta MCP · Skill: xnurta-product-d
 ## Example Call
 
 **User input**:
-> 看下 Demo US 最近 30 天有哪些 ASIN 表现不好
+> Show the underperforming ASINs in Demo US over the last 30 days.
 
 **Skill flow**:
 1. Resolve the profile: `get_user_authorized_context` → find Demo US's `profileId`
 2. `scope = underperformingOnly`, window = trailing 30 days ending yesterday
 3. Run Steps 2-6
-4. Output the markdown report — in Chinese, since the user asked in Chinese
+4. Output the markdown report in the user's language
 
 ## Error Handling
 
