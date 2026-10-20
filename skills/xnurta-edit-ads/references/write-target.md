@@ -70,7 +70,7 @@ this order:
    targeting groups.
 3. **`asinSameAs`, `asinExpandedFrom`, `asinCategorySameAs` -> `product`.**
 4. **`similarProduct` (also `exactProduct`, `relatedProduct`, `audienceSameAs`) ->
-   `product`.** Its display label reads *"Auto-Similar Product" / "自动-相似商品"*, which is
+   `product`.** Its display label reads *"Auto-Similar Product"*, which is
    misleading: the data layer classifies these as **audience** expressions, not automatic
    targeting, and they are Sponsored Display. Rule 1 already forces `product` for SD - this
    entry just spares you the round-trip. Sending `auto` for one of these fails, because

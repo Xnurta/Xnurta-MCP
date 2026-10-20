@@ -102,7 +102,7 @@ folds it to effective value `1`; describe rule `182` as pausing targets, not sup
   Therefore, "decrease by 98%" means the effective budget is 2% of the current daily budget;
   "decrease by 45%" means 55%. This is not a second rule or a conflicting value.
 - When presenting a percentage matrix, title it **Effective budget as a percentage of the current
-  daily budget (calculated)** / **相对当前日预算的生效预算比例（计算值）**. Do not call it simply
+  daily budget (calculated)**. Do not call it simply
   "actual delivery percentage": it is a budget limit, not a guarantee that the same percentage
   will be spent or delivered.
 - Prefer showing both forms at least once, for example: "00:00-03:00: decrease the current daily
@@ -137,15 +137,15 @@ folds it to effective value `1`; describe rule `182` as pausing targets, not sup
 
 Customer-facing example:
 
-> **按表现调预算：开启；运行方式：规则**
+> **Adjust budget by performance: on; mode: Rule**
 >
-> 策略 1：当日 ACOS >= 70% 时，降低预算 40%，调整后预算不低于 $5。
+> Policy 1: when same-day ACOS >= 70%, cut budget by 40%, with a floor of $5.
 >
-> 策略 2：当日 ACOS < 45% 时，提高预算 40%，调整后预算不超过 $15。
+> Policy 2: when same-day ACOS < 45%, raise budget by 40%, with a cap of $15.
 >
-> 频率设置：每天 00:00-24:00，每 30 分钟检查一次。
+> Frequency: daily 00:00-24:00, checked every 30 minutes.
 >
-> 自定义设置：开启；次日 00:00 自动将预算设置为 $3。
+> Custom setting: on; at 00:00 the next day the budget is set to $3.
 
 ### `19` - Placement rules
 
@@ -192,9 +192,9 @@ Customer-facing example:
 
   | `isSelf` | UI option | Operational meaning |
   |---:|---|---|
-  | `1` | Current campaign (all ad groups) / 当前广告活动（所有广告组） | Add to every ad group in the source campaign. |
-  | `3` | Current campaign (current ad group) / 当前广告活动（当前广告组） | Add only to the source ad group. |
-  | `2` | Ad groups in specified campaigns / 指定广告活动的广告组 | Add only to the campaign/ad-group bindings listed in `campaignAd`; enumerate those bindings when present. |
+  | `1` | Current campaign (all ad groups) | Add to every ad group in the source campaign. |
+  | `3` | Current campaign (current ad group) | Add only to the source ad group. |
+  | `2` | Ad groups in specified campaigns | Add only to the campaign/ad-group bindings listed in `campaignAd`; enumerate those bindings when present. |
 
   Do not collapse `1` and `3` into "the current campaign" or "self"; they affect different
   numbers of ad groups.
@@ -234,7 +234,7 @@ For each rule, report the customer-facing product name rather than `Rule <number
 7. Any raw/unconfirmed fields and the read-surface limitation.
 
 Use the managed-group UI action-space label in the main summary: rule `5` is **Add negative
-targets / 添加否定定向** there. "Add Negative Keywords / 添加否定词" is the corresponding
+targets** there. "Add Negative Keywords" is the corresponding
 automation-template name and may be shown secondarily, but should not replace the action-space
 label.
 

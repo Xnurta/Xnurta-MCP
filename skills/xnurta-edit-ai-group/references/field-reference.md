@@ -17,10 +17,10 @@ rejected outright.
 
 | Field | Values |
 |---|---|
-| `aiPersonality` | `1`=非常保守, `2`=保守, `3`=平衡, `4`=激进, `5`=非常激进. **>=3 required when `targetType=3` (volume/冲量)** - front-end rule, not backend-enforced |
+| `aiPersonality` | `1`=very conservative, `2`=conservative, `3`=balanced, `4`=aggressive, `5`=very aggressive. **>=3 required when `targetType=3` (volume/冲量)** - front-end rule, not backend-enforced. ⚠️ **Group-level only, and rejected outright on accounts that set personality per action space** - check [`ai-personality.md`](ai-personality.md) before sending it |
 | `campaignNameSign` | `0`=off, `1`=on |
 | `numType` / `budgetNumType` / `bidRangeType` | `1`=percentage, `2`=fixed value |
-| `*MatchType` (branded/competitor/harvest/negative) | `1`=exact(等于/精确), `2`=phrase(包含/词组) |
+| `*MatchType` (branded/competitor/harvest/negative) | `1`=exact, `2`=phrase |
 | `*ListType` (harvest/negative) | `1`=include/whitelist, `2`=exclude/blacklist |
 
 ## SD - `create_sd_ai_managed_group` fields

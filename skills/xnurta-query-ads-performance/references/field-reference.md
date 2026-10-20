@@ -165,13 +165,13 @@ value outside 0–900 (historically `-99`) as `null`, here and in
 unavailable - never as 0%, and leave it out of comparisons, averages and totals.
 
 **Sponsored Brands has four placement rows**, each carrying its own adjustment:
-`SB-Top of Search on-Amazon` (搜索结果顶部), `SB-Homepage on-Amazon` (首页),
-`SB-Detail Page on-Amazon` (商品页面) and `SB-Other on-Amazon` (搜索结果的其余位置). Earlier
+`SB-Top of Search on-Amazon`, `SB-Homepage on-Amazon`, `SB-Detail Page on-Amazon`
+and `SB-Other on-Amazon`. Earlier
 versions returned only three SB rows and put the Home value on the top-of-search row; an SB
 placement adjustment pulled before that fix is not comparable with today's.
 
 **What this entity does not cover.** Sponsored Display has no rows at all — SD is outside
-placement reporting, and the console's placement tab offers only 全部 / SP / SB. 企业购 /
+placement reporting, and the console's placement tab offers only All / SP / SB. Amazon Business /
 Amazon Business (`siteAmazonBusiness`, SP-only) has no performance row either. A placement
 rollup therefore does **not** add up to the profile's total spend; say so rather than
 presenting it as a complete breakdown.
@@ -181,10 +181,9 @@ every campaign field `null`. On one store that bucket held 26% of SP impressions
 spend) and reconciled exactly against `factEntity: campaign`. Report it as its own
 "unattributed" line — never drop it silently, never fold it into a named placement.
 
-**Talk to the user in console labels, not these codes.** One trap: SP's
-搜索结果顶部（**首页**） means the first *page* of search results (EN "Top of search (first
-page)"), while SB's **首页** is the Amazon *homepage* (EN "Home"). Same Chinese word, different
-placements — always pair the label with its campaign type. Full label table in
+**Talk to the user in console labels, not these codes.** Note that SP's "Top of search (first
+page)" and SB's "Home" are different placements despite both sitting at the top of the funnel -
+always pair a label with its campaign type. Full label table in
 [`enum-i18n.md`](enum-i18n.md).
 
 ### ProductAd
@@ -196,6 +195,7 @@ placements — always pair the label with its campaign type. Full label table in
 | `productAd.asin_` | ASIN | — |
 | `productAd.sku_` | SKU | — |
 | `productAd.productAdState_` | State | `enabled` / `paused` / `archived` |
+| `productAd.campaignType_` | Campaign type of the parent campaign | `sponsoredProducts` / `sponsoredBrands` / `sponsoredDisplay` |
 
 ### ASIN (child)
 

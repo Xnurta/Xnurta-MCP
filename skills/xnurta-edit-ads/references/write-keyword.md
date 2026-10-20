@@ -179,7 +179,7 @@ Sub-items count toward the 200 cap the same way as positive keywords.
 
 SB (sponsoredBrands) negative keywords no longer support state=paused. The server rejects the entire batch before preview or execution, identifying the invalid item; no items are modified. Other campaign types retain their existing state rules. Never convert pause to archive automatically: archiving is irreversible and requires an explicit user request. That requirement is not waivable - a confirmation waiver only governs whether you stop to ask, never whether the user chose archiving at all. Historical paused records remain readable.
 
-So when the user asks to stop / pause / 停用 SB negatives, **tell them archiving is the only
+So when the user asks to stop or pause SB negatives, **tell them archiving is the only
 available action and that it cannot be undone, then let them choose** - they should hear it
 from you, not from the rejection. If they go ahead:
 

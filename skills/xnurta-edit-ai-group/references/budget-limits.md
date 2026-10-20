@@ -1,7 +1,7 @@
 # Budget limits (site- and account-type-specific)
 
 Budget min/max are enforced by the platform UI (e.g. the total-budget field shows
-"预算至少 $1，最多 $1000000"). **MCP bypasses this.** But these limits vary by **site**
+"budget must be between $1 and $1,000,000"). **MCP bypasses this.** But these limits vary by **site**
 and by **account type (seller vs vendor)**, and:
 
 - the authorized context does **not** reliably tell you whether a profile is seller or

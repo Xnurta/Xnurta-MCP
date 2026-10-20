@@ -88,22 +88,22 @@ Managed-group labels, only for the terms that end up in the V3 / V4 lists:
 | 11 | Campaign / ad group -> internal ids, names and managed group | `get_entity_metadata(entity='campaign')`, `select: ["campaignId", "amazonCampaignId", "campaignName", "campaignType", "profileId", "aiGroupId"]`; `get_entity_metadata(entity='adGroup')`, `select: ["adGroupId", "amazonAdGroupId", "adGroupName", "campaignId"]`. Search-term rows carry **Amazon** ids; join on the `amazon*Id` fields, comparing as strings (one side may be numeric). Whether an ad group can take a negative product target is checked by `xnurta-edit-ads` at write time - metadata has no targeting-type field to pre-check it |
 | 12 | Group switches | `get_entity_metadata(entity='aiGroup')`: `aiActionSettings.targetOptimization.negativeTargetStatus` (`1` = automatic negative targeting on) and `targetHarvestStatus` (`1` or `2` = harvesting on) |
 
-A term is labelled "托管组已开自动否定" only when **every** campaign it spent in belongs to a
+A term is labelled "auto-negation on in its managed group" only when **every** campaign it spent in belongs to a
 group with that switch on; the same rule for harvesting.
 
 ## The zero-order small terms, and where small unconverted spend comes from
 
 Two different measures - keep them apart, and name them differently to the customer:
 
-- **Zero-order small terms (零单小词)** - search terms with no orders in total and spend below
+- **Zero-order small terms** - search terms with no orders in total and spend below
   `T`. Amount = call 1 spend - call 3 spend - call 4 spend. This is the V1 line. Never
   listed.
-- **Small unconverted spend by source (未出单的小额流量)** - measured one level finer, at
+- **Small unconverted spend by source** - measured one level finer, at
   search term x match type: the rows with no orders and spend below `T`. Per match type it is
   exactly (call 2) - (call 5) - (call 6); calls 5 and 6 work at that same level, so nothing
   is double-counted. It includes the zero-order slices of terms that did convert under another
   match type, so it is **not** "the source of the zero-order small terms": present it as its
-  own line - "没出单的小额流量（按搜索词 × 匹配方式计）里，X% 来自 …" - with shares.
+  own line - "X% of small unconverted spend (counted per search term x match type) comes from …" - with shares.
 
 Use the source line to say **where to look**, not to prescribe a cut: harvest the good terms
 from that match type, check its negatives, or split it into its own campaign to watch it. Do

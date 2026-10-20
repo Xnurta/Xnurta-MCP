@@ -8,7 +8,7 @@ description: >-
   group (use xnurta-edit-ai-group), editing config (use xnurta-edit-ai-group), or creating a group (use
   xnurta-create-ai-group).
 metadata:
-  version: 1.0.7
+  version: 1.0.9
 ---
 
 # Delete AI Managed Group

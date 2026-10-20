@@ -9,7 +9,7 @@ description: >-
   for a monthly report, monthly recap, or this month's performance. Not for weekly recaps (use xnurta-weekly-ads-report) or
   quarterly/QBR-level strategic review (use quarterly-ads-report, not yet built).
 metadata:
-  version: 1.1.0
+  version: 1.1.2
 ---
 
 # Monthly Ads Report

@@ -1,122 +1,140 @@
-# 部分指标不适用于所有广告类型的特别说明
+# Metrics that don't apply to every ad type
 
-## 总体原则
+## The rule
 
-一批需要查询的指标中，有的适用于所有广告类型/定向类型，有的只适用于一部分，则应该按适用情况拆分查询。查询和计算这些指标时，如涉及基础指标（click/impression/order/sales/conversion 等）作为分子或分母，也需要限制为对应的广告类型范围。
-
----
-
-## 按广告类型（campaignType）区分的指标
-
-### 新客指标（NTB）— 不适用于 SP（sponsoredProducts）
-
-| 指标 | 说明 |
-|------|------|
-| NTBOrders / NTB Orders | 新客订单数 |
-| NTBUnits / NTB Units | 新客销量 |
-| NTBSales / NTB Sales | 新客销售额 |
-| NTBOrdersRate / % of NTB Orders | 新客订单占比 |
-| NTBUnitsRate / % of NTB Units | 新客销量占比 |
-| NTBSalesRate / % of NTB Sales | 新客销售额占比 |
-
-⚠️ 计算 NTB 占比指标时，分子分母的 Orders/Units/Sales 都应该限制为 non-SP only（仅 sponsoredBrands 和 sponsoredDisplay）。
+When one request mixes metrics that apply to every ad type with metrics that apply to only
+some, **split it into separate queries** along those lines. The split applies to the base
+metrics too: when a restricted metric uses `Clicks` / `Impressions` / `Orders` / `Sales` /
+`Conversions` as a numerator or denominator, those base values must be restricted to the same
+ad-type range, or the ratio is computed over a wider population than its numerator.
 
 ---
 
-### 视频指标（Video）— 不适用于 SP（sponsoredProducts）
+## Restricted by campaign type
 
-| 指标 | 说明 |
+### New-to-brand (NTB) - not available for SP (`sponsoredProducts`)
+
+| Metric | Meaning |
 |------|------|
-| VideoUnmutes | 视频取消静音数 |
-| VideoFirstQuartileViews | 视频播放25% |
-| VideoMidpointViews | 视频播放50% |
-| VideoThirdQuartileViews | 视频播放75% |
-| VideoCompleteViews | 视频播放100% |
-| Video5SecondViews | 播放5秒或完成数 |
-| Video5SecondViewRate | 播放5秒或完成数占比 |
-| VTR | 视频浏览率 |
-| vCTR | 视频浏览点击率 |
+| NTBOrders / NTB Orders | New-to-brand orders |
+| NTBUnits / NTB Units | New-to-brand units |
+| NTBSales / NTB Sales | New-to-brand sales |
+| NTBOrdersRate / % of NTB Orders | NTB share of orders |
+| NTBUnitsRate / % of NTB Units | NTB share of units |
+| NTBSalesRate / % of NTB Sales | NTB share of sales |
+
+⚠️ For the three rate metrics, **both** the numerator and the denominator must be restricted to
+non-SP (`sponsoredBrands` and `sponsoredDisplay` only). Dividing NTB orders by all-campaign
+orders understates the share.
 
 ---
 
-### 展示型指标（Display）— 不适用于 SP（sponsoredProducts）
+### Video - not available for SP (`sponsoredProducts`)
 
-| 指标 | 说明 |
+| Metric | Meaning |
 |------|------|
-| DPV | 商品详情页浏览次数（= DPVClick + DPVvCPM） |
-| DPVR | 商品详情页浏览率。计算逻辑：`sum(DPV) / sum(nsp_impression)`，查询计算时需限制 campaignType 不为 SP |
-| ViewableImpressions | 可见曝光量（广告进入用户可视区域的次数，所有广告类型均有） |
-| ViewableImpressionsRate | 可见曝光率 |
-| vCPM | 千次可见曝光成本 |
-| ViewImpressions | vCPM 展示量（⚠️ 仅 SD vCPM 广告有，用于计算 vCPM = Spend / ViewImpressions × 1000） |
-
-⚠️ 注意区分：
-- **ViewableImpressions**（可见展示量）：所有广告类型均有
-- **ViewImpressions**（vCPM 展示量）：仅 SD vCPM 广告有
+| VideoUnmutes | Unmutes |
+| VideoFirstQuartileViews | Played to 25% |
+| VideoMidpointViews | Played to 50% |
+| VideoThirdQuartileViews | Played to 75% |
+| VideoCompleteViews | Played to 100% |
+| Video5SecondViews | Played 5 seconds or completed |
+| Video5SecondViewRate | Share of 5-second-or-complete views |
+| VTR | View-through rate |
+| vCTR | View-through click rate |
 
 ---
 
-### vCPM/Click 归因指标 — 不适用于 SP（sponsoredProducts）
+### Display - not available for SP (`sponsoredProducts`)
 
-支持的事实实体：campaign / adGroup / target / searchTerm / productAd
-不支持：placement、asin
-
-| 指标 | 说明 |
+| Metric | Meaning |
 |------|------|
-| DPVClick / DPV(Click) | 商品详情页浏览次数(Click归因) |
-| DPVvCPM / DPV(vCPM) | 商品详情页浏览次数(vCPM归因) |
-| OrdersClick / Orders(Click) | 订单数(Click归因) |
-| UnitsClick / Units(Click) | 销量(Click归因) |
-| SalesClick / Sales(Click) | 销售额(Click归因) |
-| OrdersvCPM / Orders(vCPM) | 订单数(vCPM归因) |
-| UnitsvCPM / Units(vCPM) | 销量(vCPM归因) |
-| SalesvCPM / Sales(vCPM) | 销售额(vCPM归因) |
+| DPV | Detail-page views (= DPVClick + DPVvCPM) |
+| DPVR | Detail-page view rate, computed as `sum(DPV) / sum(nsp_impression)` - restrict `campaignType` to non-SP when querying or computing it |
+| ViewableImpressions | Impressions that entered the viewport. **Available for every ad type** |
+| ViewableImpressionsRate | Share of impressions that were viewable |
+| vCPM | Cost per thousand viewable impressions |
+| ViewImpressions | vCPM impressions. ⚠️ **SD vCPM campaigns only**, used for `vCPM = Spend / ViewImpressions × 1000` |
+
+⚠️ **`ViewableImpressions` and `ViewImpressions` are different metrics**, one letter apart:
+
+- **ViewableImpressions** - viewable impressions, every ad type
+- **ViewImpressions** - vCPM impressions, SD vCPM campaigns only
 
 ---
 
-## 按事实实体区分的指标
+### vCPM / click attribution - not available for SP (`sponsoredProducts`)
 
-### AI 专属指标 — 仅 campaign 事实实体支持
+Supported fact entities: `campaign` / `adGroup` / `target` / `searchTerm` / `productAd`.
+Not supported: `placement`, `asin`.
 
-| 指标 | 说明 |
+| Metric | Meaning |
 |------|------|
-| AISpend | AI花费 |
-| AISales | AI销售额（AI花费>0时计入） |
+| DPVClick / DPV(Click) | Detail-page views, click-attributed |
+| DPVvCPM / DPV(vCPM) | Detail-page views, vCPM-attributed |
+| OrdersClick / Orders(Click) | Orders, click-attributed |
+| UnitsClick / Units(Click) | Units, click-attributed |
+| SalesClick / Sales(Click) | Sales, click-attributed |
+| OrdersvCPM / Orders(vCPM) | Orders, vCPM-attributed |
+| UnitsvCPM / Units(vCPM) | Units, vCPM-attributed |
+| SalesvCPM / Sales(vCPM) | Sales, vCPM-attributed |
+
+---
+
+## Restricted by fact entity
+
+### AI metrics - `campaign` only
+
+| Metric | Meaning |
+|------|------|
+| AISpend | Spend attributed to AI |
+| AISales | Sales attributed to AI (counted where AI spend > 0) |
 | AIACOS | AI ACOS |
 | AIROAS | AI ROAS |
 
 ---
 
-### 搜索顶部份额 — 仅 campaign、target 事实实体支持
+### Top-of-search impression share - `campaign` and `target` only
 
-| 指标 | 说明 |
+| Metric | Meaning |
 |------|------|
-| TopOfSearchIS | 搜索结果顶部展示份额（取 max，非 sum） |
+| TopOfSearchIS | Top-of-search impression share. **Take the max, never the sum** - it is a share, so adding rows together is meaningless |
 
 ---
 
-### asin 独有指标 — 仅 asin 事实实体支持
+### ASIN business metrics - `asin` only
 
-TotalSalesAmount、OrderCount、Sessions、PageViews、TACOS、UnitSessionPercentage、BuyBoxPercentage、ShippedRevenue、ShippedUnits、GlanceViews、OrganicSales、OrganicOrders 等业务指标只属于 asin 事实表，不可与 productAd 或其他广告实体混用。
+`TotalSalesAmount`, `OrderCount`, `Sessions`, `PageViews`, `TACOS`,
+`UnitSessionPercentage`, `BuyBoxPercentage`, `ShippedRevenue`, `ShippedUnits`,
+`GlanceViews`, `OrganicSales`, `OrganicOrders` and the rest of the business set belong to the
+ASIN fact table alone. They cannot be mixed with `productAd` or any advertising entity.
 
-⚠️ asin 自有指标禁止与 Campaign/AdGroup/aiGroup 做任何形式的关联（包括聚合和过滤），否则 JOIN 会产生重复行导致结果虚高。
-
----
-
-## 按维度实体区分的约束
-
-### productAd 维度 — 仅适用于 SP（sponsoredProducts）广告类型
-
-推广商品（productAd）维度只对 sponsoredProducts (SP) 广告类型适用，查询相关此维度字段时应对广告类型设置 filter 限制为 SP。
+⚠️ **Never join ASIN's own metrics to `campaign` / `adGroup` / `aiGroup` - for grouping or for
+filtering.** The join is not one-to-one, so rows are duplicated and the totals come back
+inflated. See the cross-entity join rules in `SKILL.md`.
 
 ---
 
-## 查询拆分规则
+## Dimension-level restriction
 
-当一批需要查询的指标中，有的适用于所有广告类型，有的只适用于部分广告类型时，必须按适用情况拆分为多个查询任务：
+### `productAd` - SP (`sponsoredProducts`) only
 
-1. 基础广告指标（Impressions、Clicks、Spend、Sales、ACOS 等）→ 适用于所有广告类型，可以不限 campaignType
-2. NTB/视频/展示型/vCPM归因指标 → 需限制 campaignType 为 non-SP（sponsoredBrands 和 sponsoredDisplay）
-3. AI专属指标 → 仅 campaign 事实实体
-4. TopOfSearchIS → 仅 campaign 和 target 事实实体
-5. asin 业务指标 → 仅 asin 事实实体，且禁止与广告层级关联
+The promoted-product dimension exists for Sponsored Products alone. When selecting or filtering
+on a `productAd.*` field, filter `campaignType` to `sponsoredProducts` as well, or the query
+spans ad types where the dimension has no meaning.
+
+---
+
+## How to split a mixed request
+
+| Metrics | Constraint |
+|---|---|
+| Base advertising metrics (`Impressions`, `Clicks`, `Spend`, `Sales`, `ACOS` …) | every ad type - no `campaignType` filter needed |
+| NTB / video / display / vCPM-attribution | restrict `campaignType` to non-SP (`sponsoredBrands`, `sponsoredDisplay`) |
+| AI metrics | `factEntity: "campaign"` only |
+| `TopOfSearchIS` | `factEntity: "campaign"` or `"target"` only |
+| ASIN business metrics | `factEntity: "asin"` only, and never joined to an advertising level |
+
+Report each split as what it is. A table whose NTB column covers only SB and SD while its spend
+column covers everything is two different populations side by side, and reads as if SP simply
+had no new-to-brand orders.

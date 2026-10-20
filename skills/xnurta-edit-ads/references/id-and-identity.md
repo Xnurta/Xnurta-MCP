@@ -38,7 +38,7 @@ tables with independent id spaces**, and the discriminator picks the table:
 **Rules:**
 
 1. **Echo the value metadata returned, verbatim.** Same string, same case.
-2. **Never omit one**, even where a route's field table calls it "透传" / optional. Omitting
+2. **Never omit one**, even where a route's field table calls it pass-through or optional. Omitting
    it drops a safety filter from the archived-state pre-check, so the batch proceeds with
    less verification.
 3. **Never infer or normalise one.** Do not map `"Exact"` to `"exact"`, do not guess

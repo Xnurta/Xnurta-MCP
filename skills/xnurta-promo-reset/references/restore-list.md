@@ -90,7 +90,7 @@ placement). Sort ascending by `createdDate` (the log is newest first).
 | Objective / switch differs from pre-promo | Restore with the group settings |
 
 Groups that used a **dated schedule** for the promo show schedule rows, not setting changes,
-and revert on their own when the schedule ends - list them as "已由排期自动失效".
+and revert on their own when the schedule ends - list them as "already expired with the schedule".
 
 ## 4. From a log row to a write
 
@@ -103,7 +103,7 @@ Every write goes through its owning skill, with internal ids and discriminator f
 | `placement` | `xnurta-edit-ads`: `campaign` + `updatePlacementBid` | The log's placement names are not the write fields: `topSearchAdjustment` is SP `topAdjustment` / SB `topOfSearchAdjustment`; SB uses `homeAdjustment`, `detailPageAdjustment`, `otherAdjustment`; SP uses `productPageAdjustment`, `restOfSearchAdjustment`. Values are absolute percentages 0-900 (SB integers only); send only the placements you restore. **On SB the write also sets `bidOptimization=false`** (custom bidding) - tell the user first. The Amazon Business adjustment is logged on the campaign entity, not under `["placement"]`, and has no write route here - out of scope |
 | `target` bid | `xnurta-edit-ads`: `keyword` + `updateBid` or `target` + `updateBid` | Resolve the row (keyword vs target, `matchType`, `campaignType`) from metadata first |
 | `adGroup` default bid | none | No MCP write route for ad group default bids - list it with its pre-promo value for the user to change in the platform |
-| `aiGroup` / `optimizeType` | `xnurta-edit-ai-group`: SP/SB `targetType`; SD `optimizeType` | `1` 推动增长, `2` 保持订单稳定, `3` 活动冲量, `4` legacy (SP/SB). SD groups use the SD tool and shape - e.g. its `acos` needs `acosType` - follow that skill |
+| `aiGroup` / `optimizeType` | `xnurta-edit-ai-group`: SP/SB `targetType`; SD `optimizeType` | `1` Drive growth, `2` Optimize ROAS, `3` Promotion sales boost, `4` legacy (SP/SB). SD groups use the SD tool and shape - e.g. its `acos` needs `acosType` - follow that skill |
 | `aiGroup` / `acos` | `acos` | Same percent scale on both sides (`248.115` in the log = 248.115%) |
 | `aiGroup` / `aiPersonality` | `aiPersonality` | `targetType 3` requires `aiPersonality >= 3`: when restoring both, send them in the same request |
 | `aiGroup` / `bidRangeMin`, `bidRangeMax` | `aiActionSettings` bid range | Written as one `[min, max]` pair (both required, min <= max). A log row usually changes one bound: rebuild the pair from the current value plus the restored bound. Keep the group's current `bidRangeType`. If a pre-promo bound was unset (`0` or empty, shown as "Set max bid"), do not guess how to clear it - show it and let the user decide or change it in the platform |

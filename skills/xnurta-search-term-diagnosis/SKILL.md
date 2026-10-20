@@ -12,7 +12,7 @@ description: >-
   marketplace structure (xnurta-ads-structure-analysis) or ASIN health
   (xnurta-product-diagnosis).
 metadata:
-  version: 1.0.0
+  version: 1.0.2
 ---
 
 # Search Term Diagnosis

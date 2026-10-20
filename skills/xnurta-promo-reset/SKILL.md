@@ -13,7 +13,7 @@ description: >-
   general budget or bid edits with no promo behind them (use xnurta-edit-ads /
   xnurta-edit-ai-group).
 metadata:
-  version: 1.0.0
+  version: 1.0.2
 ---
 
 # Promo Reset

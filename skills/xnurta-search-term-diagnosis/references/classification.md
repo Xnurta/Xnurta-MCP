@@ -72,7 +72,7 @@ advice.
 **V3b - negative candidates.** Zero-high search terms, sorted by spend, minus:
 
 - brand terms, own ASINs, terms containing a whitelisted root → **held back**, counted at the
-  end ("品牌词 / 自家 ASIN / 白名单拦截 N 条");
+  end ("N held back: brand terms / own ASINs / allow-listed");
 - terms whose text equals an enabled exact keyword → group V3c.
 
 Action: ASIN entry → negative product targeting; keyword entry → negative exact. Each row
@@ -84,7 +84,7 @@ these, so they are not proposed as negatives. Show where the zero-order spend ca
 exact keyword itself, which V3a already covers when it crossed `T`, or other campaigns'
 broad / phrase / auto); negating the term in those other campaigns is the customer's call.
 
-Then the managed-group label (data-retrieval calls 10-12) on V3b rows: "托管组已开自动否定"
+Then the managed-group label (data-retrieval calls 10-12) on V3b rows: "auto-negation on in its managed group"
 when every campaign the term spent in is in a group with automatic negative targeting on.
 Labelled rows stay in the list.
 
@@ -108,7 +108,7 @@ Keyword-entry terms where all of the following hold:
 - the term is not already an enabled exact keyword;
 - the term is not a pasted product title: more than 8 words or containing a comma.
 
-Sort by orders. Mark brand terms (they go into a brand exact group). Add "托管组未开定向收割"
+Sort by orders. Mark brand terms (they go into a brand exact group). Add "target harvesting off in its managed group"
 when the term's managed groups all have harvesting off.
 
 ## V5 - fragmented exact keywords

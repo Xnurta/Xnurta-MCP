@@ -50,11 +50,11 @@ The spend ceiling is expressed in CPC so it works in any currency without an exc
 2. Slide a 3-day window over the 21 days: 19 windows.
 3. **Usable windows**: at least 10 clicks, and at least one sale. A window that spent but sold
    nothing has no finite ACOS - leave it out of both percentiles (ACOS and CVR come from the
-   same set of windows), but count it and say so when it matters ("21 天里有 6 段 3 天没出单").
+   same set of windows), but count it and say so when it matters ("6 separate three-day stretches with no orders in 21 days").
 4. With **5 or more** usable windows: normal ACOS = 10th-90th percentile of the usable
    windows' ACOS; normal CVR = 10th-90th percentile of their CVR.
 5. With fewer (new or small items, or items that often sell nothing): use the **store's**
-   range and say "店铺整体平时范围" in the reason. The store range is computed the same way on
+   range and say "the store's overall normal range" in the reason. The store range is computed the same way on
    the store's daily totals - calendar filled, 3-day windows - with no click minimum (a whole
    store clears it anyway); a store window with no sales is left out like an item's.
 
@@ -84,16 +84,16 @@ the uplift in percentage points instead: under 50 points counts as "< 1.5x", 100
 
 | # | Condition | Suggestion | Reason should say |
 |---|---|---|---|
-| 1 | Fewer than 10 clicks **and** spend below 10 x the store's average CPC (normal period) | Restore at once | "大促后 3 天只花了 $2.1，影响很小" |
+| 1 | Fewer than 10 clicks **and** spend below 10 x the store's average CPC (normal period) | Restore at once | "$2.10 spent in the three days after the promo - negligible" |
 | 2 | ACOS above its normal range **and** above target | Restore now | ACOS, the range, the target |
-| 3 | ACOS above target, but **not** above its own normal range (own range, not store fallback) | Normal pace (rule 5) + note | "高于目标，但和它平时差不多——不是大促造成的" |
+| 3 | ACOS above target, but **not** above its own normal range (own range, not store fallback) | Normal pace (rule 5) + note | "above target, but in line with its own normal range - not caused by the promo" |
 | 4 | CVR above its normal range | Step down: 3 days if ratio >= 2, else 2 days | CVR, the range, the ratio |
 | 5 | Otherwise | Restore at once if ratio < 1.5, else 2 days | ACOS / CVR within range, the ratio |
 
 Then overrides:
 
 - **Product low on stock** (the promoted ASINs' `asinDayAvailability` under ~2 weeks, Seller
-  profiles with SP-API only) -> restore now: "库存只够 9 天，不要把剩余库存花在高价流量上".
+  profiles with SP-API only) -> restore now: "only 9 days of stock left - don't spend what's left on expensive traffic".
 - **A deal still running** (from Step 1) -> hold until it ends.
 - **Changed again after the window**, **created in the window**, **lowered** -> you decide
   (see [`restore-list.md`](restore-list.md)).
@@ -111,7 +111,7 @@ Example: 100 -> 35 over 3 days: 78.33 -> 56.67 -> 35 (shown as $78 -> $57 -> $35
 Count the **distinct days** with a `Campaign Out of Budget` event per campaign in the
 post-promo days (several events can land on one day).
 
-- **2 or more of the 3 days** -> binding: "大促后每天都花光 $100，大促前是 $250，可以考虑加回".
+- **2 or more of the 3 days** -> binding: "hitting the $100 cap every day since the promo, against $250 before it - worth raising".
 - **Fewer** -> not binding: adding budget back changes nothing. If the campaign's sales also
   fell sharply, say budget is not the cause and suggest checking stock, buy box and listing
   status.
@@ -121,7 +121,7 @@ post-promo days (several events can land on one day).
 - A manual-bidding store, 88 campaigns with promo budget changes: 16 restore now (3-day
   post-promo spend of 1,533), 13 step down, 7 at once, 4 changed again later, 45 lowered,
   3 unchanged.
-- A managed-group store: all 43 groups still on 活动冲量 five days after the promo; of 41
+- A managed-group store: all 43 groups still on Promotion sales boost five days after the promo; of 41
   campaign budgets, 7 restore now, 5 step down, 6 at once, 12 lowered (4 binding), 11
   unchanged. Switching the target from the store range to each group's pre-promo target did
   not change any "restore now" verdict. (Those counts used a fixed 20 USD "barely spent"

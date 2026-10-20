@@ -67,7 +67,7 @@ Rules:
 
 This is the common case, and it is not a token problem to solve - it is a new operation:
 
-- "只改第 2 个" / "去掉那个" / "再加一个" all change `request`, so the old token cannot be
+- "only change the second one" / "drop that one" / "add one more" all change `request`, so the old token cannot be
   used for the new scope. Sending Phase 2 with a modified request **burns the token and
   writes nothing**. Do not try it.
 - Re-read the current state (time has passed, and the archived guard fails closed), then run
@@ -79,7 +79,7 @@ This is the common case, and it is not a token problem to solve - it is a new op
 
 ### When the user defers
 
-"等下 / 我先看看" is neither a yes nor a no. Do not call Phase 2, and do not re-preview to
+"hold on" / "let me look first" is neither a yes nor a no. Do not call Phase 2, and do not re-preview to
 prompt them. If they come back within the 5-minute TTL with a plain yes and **nothing has
 changed**, the original token is still valid. If they come back later, or with any change,
 start again from Phase 1. Do not tell them whether a token is still alive - just re-preview

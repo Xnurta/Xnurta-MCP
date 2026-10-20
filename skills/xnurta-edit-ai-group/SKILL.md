@@ -10,7 +10,7 @@ description: >-
   save_sp_sb_ai_managed_group (edit mode). Not for creating a group (use xnurta-create-ai-group)
   or deleting one (use xnurta-delete-ai-group).
 metadata:
-  version: 1.2.0
+  version: 1.2.2
 ---
 
 # Edit AI Managed Group
@@ -87,8 +87,10 @@ performance bidding, placement bid adjustment (SP only), bid range (min/max), or
 configuration through `get_entity_metadata`, but cannot edit it - if that's the intent on
 an SB group, show the current setup when useful, point the user to the platform for changes,
 and do **not** build write params). Also **strict ACOS / ACOS priority**
-(`bidPerformanceStrictAcosStatus`) is a sub-switch of performance bidding - **SP only, with strict
-preconditions** (`targetType=2` + `bidPerformanceStatus=1` + `aiPersonality>=3`) and a
+(`bidPerformanceStrictAcosStatus`) is a sub-switch of performance bidding - **SP only, with
+strict preconditions** (`targetType=2` + `bidPerformanceStatus=1` + an AI personality of at
+least `3` on performance bidding - group-level `aiPersonality` on legacy accounts,
+`bidPerformanceAiPersonality` where personality is per action space, see [`references/ai-personality.md`](references/ai-personality.md)) and a
 real tradeoff; see [`references/coupling-rules.md`](references/coupling-rules.md). Ask which one.
 
 **"off / pause / stop"** - three very different things:
@@ -157,8 +159,12 @@ new value.
      integer-only, and the known multi-campaign minimum relationship). Site/account
      ranges are incomplete; do not invent or silently clamp an unknown limit. See
      [`references/budget-limits.md`](references/budget-limits.md).
-   - **`aiPersonality` 1-5, and >=3 when `targetType=3` (promotion volume)**; name not blank;
-     any range min <= max; coupled switches carry their companion fields.
+   - **AI personality 1-5** - group-level `aiPersonality` (**>=3 when `targetType=3`
+     promotion volume**) on legacy accounts, the per-action-space `*AiPersonality` fields or
+     batch `actionSpaceIntensity` where those are in use; the wrong form is rejected
+     before any write, and **omitting personality entirely is the right move when the
+     user didn't ask to change it**. See [`references/ai-personality.md`](references/ai-personality.md).
+     Name not blank; any range min <= max; coupled switches carry their companion fields.
    - **The backend now rejects invalid values - pre-validate anyway** for a clear error
      instead of a downstream one (prod-confirmed): `acos`/`roas` out of range
      (incl. `0`, negative, over-limit), `aiPersonality` outside `1`-`5`, `remark` over
@@ -240,7 +246,7 @@ Each item:
 | `optimizeType` | int | `1`=drive growth, `2`=control cost, `3`=volume. **`timeType=1` only - required there, rejected on `timeType=2`** |
 | `acos` | number | Target ACOS, x100 scale. Same `timeType` rule as above |
 | `aiPersonality` | int | `1`-`5`. Same `timeType` rule as above |
-| `aiActionSettings` | object | Per-schedule action space, same shape as the group |
+| `aiActionSettings` | object | Per-schedule action space. ⚠️ **Not the same shape as the group**: personality fields nest inside `bidOptimization` / `structOptimization` / `budgetOptimization` / `targetOptimization` here, weekly schedules reject them outright, and on a fixed-date schedule an omitted one falls back to that schedule's `aiPersonality` instead of keeping its old value. See [`references/ai-personality.md`](references/ai-personality.md) |
 | `aiAutomation` | object | Per-schedule rules, **keyed by rule number** (`"2"`,`"4"`,`"5"`,`"13"`,`"17"`,`"19"`,`"20"`,`"181"`,`"182"`), each at least `{"status": 0}` |
 
 ### The three rules that will bite you
@@ -589,6 +595,7 @@ value as a write value** - look up the correct write value for the exact path yo
 - [`references/action-space-matrix.md`](references/action-space-matrix.md) - capability support (AI / Rule / none) per SP / SB / SD, and `noRule` capabilities
 - [`references/coupling-rules.md`](references/coupling-rules.md) - companion-field couplings, the performance-budget / budget-reallocation scope relationship, and group-total-budget rescale behavior
 - [`references/budget-limits.md`](references/budget-limits.md) - site/account-type budget ranges (front-end rules MCP bypasses)
+- [`references/ai-personality.md`](references/ai-personality.md) - per-action-space AI personality vs the legacy group-level field, the 12 fields and SB's subset, batch `actionSpaceIntensity`, and `get_sp_sb_ai_personality_recommendation`
 - [`references/enum-i18n.md`](references/enum-i18n.md) - product label <-> code
 - [`references/platform-notes.md`](references/platform-notes.md) - shared write-tool behavior (MCP-bypass principle, silent-ignore rule, envelope, errors)
 - [`references/template-guide.md`](references/template-guide.md) - recommending a system template by campaign purpose: when to offer it, purpose -> template table with reasons, identifying the purpose, what to say, and how to apply it
