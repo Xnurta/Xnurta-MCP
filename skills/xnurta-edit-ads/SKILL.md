@@ -10,7 +10,7 @@ description: >-
   those uses xnurta-create-ai-group / xnurta-edit-ai-group / xnurta-delete-ai-group. Not for
   reading data (use xnurta-query-ads-performance / xnurta-query-entity-metadata).
 metadata:
-  version: 1.1.4
+  version: 1.1.5
 ---
 
 # Edit Ads

@@ -12,7 +12,7 @@ description: >-
   marketplace structure (xnurta-ads-structure-analysis) or ASIN health
   (xnurta-product-diagnosis).
 metadata:
-  version: 1.0.2
+  version: 1.0.3
 ---
 
 # Search Term Diagnosis
@@ -29,7 +29,7 @@ No MCP tool of its own. It reads with two tools and hands execution to one skill
 
 > **Dependency - install the three skills above alongside this one.** Skills install as
 > sibling directories under your agent's skills root (see the
-> [supported-agents table](../README.md)); the `../xnurta-.../` links resolve against it.
+> the installation notes in [README](../README.md)); the `../xnurta-.../` links resolve against it.
 > Auth, errors, pagination, date limits and currency rules are in the query skills'
 > `references/platform-notes.md` - read it once.
 
