@@ -6,7 +6,7 @@ The current Xnurta MCP v1.3.1 supports data queries, AI managed-group management
 
 ---
 
-## What v1.3.1 can do for you
+## What Xnurta MCP can do for you
 
 - **Query your data in natural language** — ask "rank last week's campaigns by ACOS" or "show this product line's TACOS trend over the past 8 weeks" right inside your AI assistant. After authorization, there is no need to repeatedly sign in or export data.
 - **Calculate true profitability with your own data** — hand your costs / margins / goals to the AI and let it pull ad spend: "based on real margins, which campaigns are losing money — cut or scale?" Questions that require combining ad data with your own business data are exactly what the platform alone can't answer.
