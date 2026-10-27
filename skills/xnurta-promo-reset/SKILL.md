@@ -13,7 +13,7 @@ description: >-
   general budget or bid edits with no promo behind them (use xnurta-edit-ads /
   xnurta-edit-ai-group).
 metadata:
-  version: 1.0.3
+  version: 1.0.4
 ---
 
 # Promo Reset
@@ -112,7 +112,12 @@ Full procedure, queries and edge cases: [`references/restore-list.md`](reference
 The rules that decide the result:
 
 a. **Pull the log without a `changeBy` filter and classify `changedBy` yourself.** A row is a
-   human change when `changedBy` is an email address, `Manual`, or `Amazon Console`. You
+   human change when `changedBy` is an email address or `Manual`. **`Amazon Console` is a
+   source, not an operator** — it means the change came from Amazon's side, and nothing
+   tells you who or what made it there. **It is not in the default restore set.** Pull the
+   rows, list them in their own section as source-unknown, force their `suggestion` to
+   `customerDecides`, and restore only the ones the user confirms one by one — never via
+   `restoreNow` or `stepDown`. You
    **cannot** filter with `changeBy: manual` — the server **rejects** it (case-insensitive,
    in `IN`, `NOT_IN` or mixed). It only ever matched rows whose `changedBy` was literally
    `Manual` and missed every change attributed to a user's email (seen in production
@@ -328,7 +333,8 @@ what the user said, and the verification still runs.
 # Promo Reset - {store}
 **Promotion window**: {start} ~ {end} ({timezone})  **Restore mode**: {performance-based batches / restore all at once}
 {Performance-based mode only: **Performance window**: {post start} ~ {post end}}
-**Change sources**: Human users (email accounts) + Amazon Console {+ user-approved additional sources}
+**Change sources**: Human users (email accounts) + `Manual` {+ user-approved additional sources}
+{If any Amazon-side rows exist: **Amazon-side changes (source unknown, not restored by default)**: {n} items — listed below for your decision}
 {Notes about insufficient data, partial coverage, UTC timestamps, or other limits}
 
 ## Summary
@@ -372,7 +378,8 @@ internal id; an export adds the **Amazon** id column (see the base skills' platf
   "window": {"start": "...", "end": "...", "clock": "store-local"},
   "mode": "performanceBased|allAtOnce",
   "postWindow": {"start": "...", "end": "..."},
-  "sources": ["email", "Amazon Console"],
+  "sources": ["email", "Manual"],
+  "amazonSideSources": ["Amazon Console"],
   "groups": [{"aiGroupName": "...", "field": "targetType|acos|aiPersonality|bidRange|totalBudget|<action-space switch>", "now": "...", "restoreTo": "...", "basis": "..."}],
   "items": [{"objectType": "campaignBudget|keywordBid|targetBid|placement", "name": "...", "amazonId": "...",
              "now": 100, "restoreTo": 50, "steps": [75, 50], "suggestion": "restoreNow|stepDown|restoreOnce|hold|customerDecides|skip",
@@ -387,6 +394,11 @@ step (the pre-promo value, e.g. `[50]`) like any restore-at-once item, so the re
 plan file, resume and read-back directly; `suggestion` is
 only `restoreOnce`, `hold`, `customerDecides` or `skip`; the `reason` of a restored item says
 the user chose to restore without judging performance.
+
+In **either** mode, an item whose `changedBy` is `Amazon Console` carries `suggestion` =
+`customerDecides` regardless of what its performance would otherwise suggest, and its
+`reason` says the change came from Amazon's side with no known author. In the JSON result
+those rows' sources are listed under `amazonSideSources`, separate from `sources`.
 
 ## Data boundaries
 
