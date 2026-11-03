@@ -2,7 +2,7 @@
 
 Bring Xnurta's advertising capabilities into your own AI agent (Claude, ChatGPT, and more) and make your data part of your workflow — query data, run analyses, and calculate true profitability in plain language, combining your own costs, margins, and goals. After authorization, there is no need to repeatedly sign in to the platform, export spreadsheets, or switch between systems.
 
-The current Xnurta MCP v1.3.1 supports data queries, AI managed-group management, SP campaign creation, and live Amazon Sponsored Ads editing. You can create SP campaigns with ad groups, advertised products, targeting, and placement settings; update campaign budgets, status, and SP bidding strategies; and manage keywords, targets, promoted products, and negative targeting. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported; archiving a campaign through a status update is supported.
+The current Xnurta MCP v1.3.6 supports data queries, AI managed-group management, SP campaign and ad group creation, and live Amazon Sponsored Ads editing. You can create SP campaigns with ad groups, advertised products, targeting, and placement settings, or add new ad groups to an existing SP campaign; update campaign budgets, status, and SP bidding strategies; change portfolio membership, portfolio budgets and flight dates, and ad group state; and manage keywords, targets, promoted products, and negative targeting. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported; archiving a campaign through a status update is supported.
 
 ---
 

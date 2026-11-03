@@ -4,6 +4,115 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
 
 ## [Unreleased]
 
+## [1.3.6] - 2026-11-03
+
+### Added
+
+- `xnurta-query-ads-performance` documents the `ilike` operator and a Text matching section: `ilike` for case-insensitive matching, `like` only when case-sensitivity is explicitly requested, with an intent-to-pattern table and the `campaignAudience` exception (use its `search` parameter instead).
+- `xnurta-query-entity-metadata` adds the ASIN BSR category fields (`asinBsrCategoryId` / `asinBsrCategoryName` and their parent equivalents, returned only — no filtering or sorting), the `orderBy` restrictions per entity, and an explicit note that `ilike` is **not** accepted by this tool.
+- `xnurta-edit-ads` documents the four confirmation failure messages verbatim, separates the confirmation-service outage by phase (Phase 1 issues no token; Phase 2 cannot verify one that was issued), and adds a table mapping `errorType` plus message prefix to the right response.
+
+### Changed
+
+- `xnurta-edit-ads` keyword routes: `campaignType` and `matchType` are now documented as **required** with their enum values, instead of "send it". Both are validated before the preview is issued, so a bad value is rejected with the exact parameter path and no `confirmToken` comes back.
+- Preview field lists are complete rather than indicative: `keyword` and `target` `updateBid` carry nine fields each (`target` uses `targetText` and has no `matchType`), `productAd` `archive` carries five, and the `updateStatus` previews are spelled out per entity.
+- The token-survival rules are split by where the failure happens. The routes that validate the whole batch up front reject before the token is touched, so a field or nested-`profileId` rejection no longer consumes it there.
+- Text-matching guidance in the shared platform notes is now tool-specific: each tool's Skill defines its own operators, case sensitivity and wildcard handling, and the rules must not be carried across tools.
+
+### Fixed
+
+- `matchType` was documented as **not** enum-validated, with the explicit claim that any string passes through. The opposite is true, and the stale text also told you not to pre-filter. A request missing `matchType` previously failed only at execution time with a generic error that named no field.
+- SB negative keywords were documented as unrestricted at campaign level, with an instruction not to filter those items out. `sponsoredBrands` with `businessType=campaign` is rejected on both `updateStatus` and `copy`, before anything is written.
+- The bid preview was described as reading the current bid, and `projectedBid: null` as a lookup failure. The preview never queries the live bid: `previousBid` is echoed back from the request and `projectedBid` is computed from it, so a preview that looks right is not evidence the baseline is current.
+- The `get_ads_perf` operator list omitted `!=`, `isNull` and `isNotNull`, all of which are supported and already used elsewhere in the docs. `notin` is **not** supported on that path — only `campaignAudience` accepts it — although the server's own error text lists it.
+- `keywordCurrentBid` cannot be used to verify a bid write: on the stores where it reads `0` it stays `0` after a successful write. Read `keywordBid` back instead, and report an unmoved value as accepted-but-unconfirmed rather than re-sending or falling back to pausing the keyword.
+- The `like` wildcard note claimed that `%` is stripped and replaced with an automatic leading and trailing `%`. That holds for `get_entity_metadata`, not for `get_ads_perf`, where the pattern reaches SQL unchanged.
+
+### Versions
+
+- `xnurta-query-ads-performance` and `xnurta-query-entity-metadata` `1.4.8` -> `1.4.9`, `xnurta-query-operation-log` `1.3.7` -> `1.3.8`, `xnurta-edit-ads` `1.1.6` -> `1.1.7`, `xnurta-weekly-ads-report` `1.1.4` -> `1.1.5`, `xnurta-monthly-ads-report` `1.2.1` -> `1.2.2`, `xnurta-ads-structure-analysis` `1.1.5` -> `1.1.6`, `xnurta-product-diagnosis` `1.2.2` -> `1.2.3`. The other six Skills are unchanged.
+
+## [1.3.5] - 2026-10-27
+
+### Added
+
+- `xnurta-create-campaign` covers `create_sp_ad_group`: adding new ad groups to an existing SP campaign, with promoted products, targeting and negatives. New reference `create-sp-ad-group.md`. Campaign creation is all-or-nothing per batch; ad group creation is not atomic and reports `partial_success` — both are now stated explicitly.
+- `xnurta-edit-ads` expands from 20 routes to 25: portfolio membership, portfolio budget and flight dates, and ad group state. New references `write-ad-group.md` and `write-portfolio.md`.
+- `xnurta-query-entity-metadata` adds category and brand targeting IDs, and delivery status.
+
+### Changed
+
+- Product diagnosis gained minimum-sample baselines for the deterioration signal: `recentSalesBaselineOrders` (default `5`) and `recentSalesBaselineAmount` (default: one `T`). Without them a `$1.00 -> $0.70` move counted as a 30% decline. Both are accepted as customer overrides and echoed in the structured result, with `recentSalesBaselineAmountSource` so the classification can be reproduced.
+- `totalDailyBudget` is documented from both sides: it is the sum of member budgets and nothing enforces it as a cap, but it is writable, and writing it proportionally rescales every enabled campaign's daily budget. The blast radius must be stated in the preview.
+- Operation-log guidance now covers backfill (rows keep arriving for about two days, so a count is a count as of when it ran) and volume (machine rows can reach hundreds per hour, so a day of AI activity does not fit under the 1,000-row cap).
+- Write rate limits — 20 calls/min, counted separately per tenant+tool and user+tool — are documented in every Skill that writes, not only some.
+- Read-back rules account for mirror lag: the metadata mirror can trail Amazon by 20 minutes or more, so a read-back that disagrees is not a failed write and is never grounds to re-send. The row is reported as `pending sync`; after `ambiguous_write` or `timeout` the outcome is explicitly unknown rather than "written".
+
+### Fixed
+
+- The `*ActionStatus` field names did not exist. 56 occurrences across 8 files were wrong, and the callout at the top of the field reference used exactly these as its example. The real fields are `budgetDaypartStatus`, `budgetDynamicStatus` and `budgetRedistributeStatus`. Unknown fields are dropped silently, so a call written against the old names returned success while the switch never moved.
+- `keywordCurrentBid` was described three different ways across the Skills — two told you to use it as the bid basis, one warned it can read `0`. Unified: base bids on `keywordBid`, treat `keywordCurrentBid` as reference only, and always check for `0`.
+- `targetCurrentBid` was described as possibly differing from `targetBid_`. That holds only for keywords; for other target types the fields map to the same column and can never differ, so equality must not be read as "AI never adjusted this".
+- `changedBy: Amazon Console` is a source, not an operator — it means the change came from Amazon's side and does not count as a human change. Corrected in 10 places, including the shared attribution rules and the promo-reset restore list, where such rows now require the source to be stated before any rollback.
+- `bidRangeType=1` is flagged as unit unconfirmed, and the former `0.01`-`100` "percentage" validation was removed: under the coefficient reading that bound rejects legal values and admits illegal ones. `budgetNumType` and `bidRangeType` were split into separate enum rows, which was the root of four inconsistent statements.
+- Unknown `select` fields on `get_entity_metadata` are dropped, not rejected — documented in all 14 shared platform notes, together with the point that this differs from `invalid_params` on filters and metrics.
+- `currentBudget = 0` and `asinPrice = 0` are sentinel values (no AI-adjusted value recorded; unpopulated), not a zero budget or a free product, and a `>=` filter silently drops such rows.
+- `get_operation_log entities:['audience']` returns 0 rows for every query, so an empty result carries no information and must not be read as "nothing changed".
+- The "internal IDs are small numbers, Amazon IDs are 15-19 digits" heuristic was removed. A single log row carries both at once, and length is not a contract — the field name decides.
+- Cross-table comparisons: two figures for the same window and object can differ slightly because they come from different tables. One judgement, one source.
+
+### Versions
+
+- `xnurta-query-ads-performance` `1.4.7` -> `1.4.8`, `xnurta-query-entity-metadata` `1.4.7` -> `1.4.8`, `xnurta-query-operation-log` `1.3.6` -> `1.3.7`, `xnurta-create-ai-group` and `xnurta-edit-ai-group` `1.2.3` -> `1.2.4`, `xnurta-edit-ads` `1.1.5` -> `1.1.6`, `xnurta-create-campaign` `1.0.4` -> `1.0.5`, `xnurta-weekly-ads-report` `1.1.3` -> `1.1.4`, `xnurta-monthly-ads-report` `1.2.0` -> `1.2.1`, `xnurta-ads-structure-analysis` `1.1.4` -> `1.1.5`, `xnurta-product-diagnosis` `1.2.1` -> `1.2.2`, `xnurta-search-term-diagnosis` and `xnurta-promo-reset` `1.0.3` -> `1.0.4`. `xnurta-delete-ai-group` stays at `1.0.9`.
+
+## [1.3.4] - 2026-10-22
+
+### Added
+
+- `aiGroup` exposes the read-only `hasAdvice` field on accounts with per-action-space intensity: `true` means an applicable personality recommendation exists, `false` means none, and `null` means the recommendation service is temporarily unavailable. `null` is documented as "unknown", not "none"; the field cannot be filtered on, and its absence does not identify the account type.
+- The `evidence` / `isApplyP` constraints enforced by the gateway on `save_sp_sb_ai_managed_group` are documented: at most 4 entries, one per service, `personality` in `1`-`5`, no `service=placement` on SB, and on edit each entry's `aiGroupId` must be `0` or equal to the group ID.
+
+### Changed
+
+- **Breaking for JSON consumers**: in `xnurta-monthly-ads-report`'s `structured_report`, `newProducts` was renamed `newlyAdvertisedProducts`, and `existingProductsNewlyAdvertised` was added.
+- Operation-log timestamps run on three clocks, not two: ad entities use store time for a single store and UTC across stores; SP/SB managed groups are UTC; SD managed groups use the downstream database timezone, which is declared nowhere. A query that may return SD managed-group rows therefore cannot be given a single timezone label, and sorting is by raw timestamp string rather than "newest first". Synchronised across all 24 copies of the platform notes.
+- Authentication failures: an invalid or expired token now returns 401/403 rather than 503. This is a permanent error and calls for re-authentication, not a retry. Covered in 16 copies of the platform notes.
+
+### Fixed
+
+- `get_operation_log` `resourceIds` requires Amazon IDs for `campaign` and `adGroup`. Product diagnosis previously taught the internal IDs, which match no rows and raise no error — a successful call returning nothing looks exactly like "nobody changed anything". Replaced with a three-hop resolution: `productAd` for the internal ID, the `campaign` entity for `amazonCampaignId`, then the `adGroup` entity for `amazonAdGroupId`. The third hop cannot be skipped. `campaign`, `adGroup` and `aiGroup` are now three separate calls with explicit `entities`, which also restores real pagination.
+- `changeBy: manual` is now rejected outright by the server (case-insensitive, in `IN`, `NOT_IN` or mixed). The Skills previously said it merely missed email-attributed changes. Corrected in 7 places; `Manual` is marked as a display value, not a filter value.
+
+## [1.3.3] - 2026-10-21
+
+### Changed
+
+- Product diagnosis splits the single five-way lifecycle label into **two orthogonal axes**, following customer feedback that the published definition was unreadable. The old label compressed two unrelated things, producing conclusions that do not survive an operator reading them: a product's "lifecycle" depended on its spend rank in your account, star and declining were mutually exclusive, the label changed with the reporting window, there was no mature stage, and decline was measured on ad orders, which move when you change bids and budgets.
+  - **Portfolio tier** (`star` / `core` / `longTail` / `noAdSpend`): current-period spend share plus ACOS. Account-relative and window-relative, answering where the money goes.
+  - **Lifecycle stage** (`new` / `growth` / `mature` / `declining` / `insufficientData`): SP advertising age plus an independent 12-whole-week total-sales trend. Intrinsic to the product and stable across reporting periods.
+  - Star x declining is the cell the single label could not express, and the most valuable one.
+- New Step 2f builds a 12-week weekly series aggregated on Monday. 12 weeks rather than 13: 84 days fits one call, 91 exceeds the 90-day cap of `get_ads_perf`. Both ends are aligned to Monday/Sunday, or a partial trailing week reads as a decline that never happened. The year-over-year companion call shifts back 364 days, so Monday stays Monday.
+- Declining has two paths: drift (normalized slope <= `-0.10` and drawdown >= `0.25`) or cliff (drawdown >= `0.50` on its own).
+
+### Fixed
+
+- Hourly and AMS data return placeholder AI metrics: `AISpend` / `AISales` come back as 0 and `AIACOS` / `AIROAS` as null, exactly as on `keywordPlacement`. This was previously documented only for `keywordPlacement`, which read as if hourly could separate AI from manual. AI attribution is daily-granularity only. The hour-of-day table in structure analysis no longer carries an AI column.
+- Hourly timestamps are in the store's local IANA timezone, not UTC. The guidance no longer avoids statements like "peaks at 8pm" — it requires them to be labelled store-local, with the DST changeover day treated as ambiguous.
+- Three contradictory freshness claims were replaced by what the evidence supports: first data in about 2 hours, backfill afterwards, final stabilisation window unknown. T+2 belongs to the daily pipeline and is not the point at which hourly attribution completes. Recent hours are `provisional` — readable but subject to revision — not `incomplete`.
+
+## [1.3.2] - 2026-10-20
+
+### Added
+
+- New reference `ai-personality.md` in both the create and edit managed-group Skills, covering per-action-space AI personality. Accounts fall into two classes, determined only at call time: on newer accounts a group-level `aiPersonality` is rejected before the write, and the 12 `*AiPersonality` fields inside `aiActionSettings` are used instead (or batch `operation=actionSpaceIntensity`). SB supports only 6 of them, and sending any of the other 6 — including sending `null` — rejects the whole call. Schedules take a different shape: personality fields must be nested inside the optimization modules, weekly schedules reject personality outright, and an omitted entry on a fixed-date schedule falls back to that schedule's `aiPersonality` rather than keeping the current value.
+- Second content batch across the analysis Skills: expanding a parent ASIN to its children when the parent itself is not advertisable; why variants under one ad group cannot have per-ASIN budgets; what is actually writable after reading hourly data (switches and personality, not the hour matrix); checking dependants before pausing, and preferring pause over the irreversible archive; and a three-step flow for competitor ASIN targeting that removes the customer's own ASINs from the suggestions first.
+
+### Changed
+
+- The Xnurta Skill entry points are English-only.
+- The `capability_unavailable` error is documented in the platform notes.
+- All 14 Skills take one patch bump, aligned to the versions on the Skill Hub, which had drifted one patch ahead of the repository. Release `v1.3.1` -> `v1.3.2`.
+
 ## [1.3.1] - 2026-10-13
 
 ### Added

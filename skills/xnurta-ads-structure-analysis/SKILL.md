@@ -10,7 +10,7 @@ description: >-
   xnurta-weekly-ads-report / xnurta-monthly-ads-report / a lighter ad-hoc analysis skill), product-level diagnosis
   (use xnurta-product-diagnosis), or search-term diagnosis (use xnurta-search-term-diagnosis).
 metadata:
-  version: 1.1.5
+  version: 1.1.6
 ---
 
 # Ads Structure Analysis
