@@ -9,14 +9,14 @@ Official Skills for use with Xnurta MCP, in two tiers:
 
 | Skill | Version | MCP Tool | Scope | Purpose |
 |-------|---------|----------|-------|---------|
-| [xnurta-query-ads-performance](xnurta-query-ads-performance/) | 1.4.9 | `get_ads_perf` | `amazon_sa_performance_data:read` | Query ad performance metrics: spend, ACOS, ROAS, trends, rankings, period comparison, hourly (AMS) and keyword × placement breakdowns, plus Vendor ASIN metric semantics (shipped/ordered, distributorView/sellingProgram) |
-| [xnurta-query-entity-metadata](xnurta-query-entity-metadata/) | 1.4.9 | `get_entity_metadata` | `amazon_sa_ads_configuration:read` | Query entity configuration and delivery status, category and brand targeting IDs, managed-group schedules, enabled campaign automation-rule types, and rule-mode rule configuration |
-| [xnurta-query-operation-log](xnurta-query-operation-log/) | 1.3.8 | `get_operation_log` | `amazon_sa_ads_logs:read` | Query operation logs: human and AI bid, budget, and status changes (including the timestamp timezone rules) |
-| [xnurta-create-ai-group](xnurta-create-ai-group/) | 1.2.4 | `create_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` / `get_sp_sb_ai_personality_recommendation` | `amazon_sa_managed_group:write` | Create SP, SB, or SD AI managed groups, optionally from a platform template recommended by campaign purpose, and with an SP/SB schedule |
-| [xnurta-edit-ai-group](xnurta-edit-ai-group/) | 1.2.4 | `edit_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` / `get_sp_sb_ai_personality_recommendation` | `amazon_sa_managed_group:write` | Edit one or multiple AI managed groups, apply templates (recommended by campaign purpose), manage SP/SB schedules |
-| [xnurta-delete-ai-group](xnurta-delete-ai-group/) | 1.0.9 | `delete_ai_managed_group` | `amazon_sa_managed_group_delete:write` | Delete a managed group and release or migrate its campaigns |
-| [xnurta-edit-ads](xnurta-edit-ads/) | 1.1.7 | `batch_update_ads` | `amazon_sa_campaign_edit:write` | Edit campaign budget / state / bidding / portfolio membership, portfolio budgets and dates, ad group state, keywords, targets, promoted products and negatives (25 routes, 12 may need two-phase confirmation) |
-| [xnurta-create-campaign](xnurta-create-campaign/) | 1.0.5 | `create_sp_sb_campaign` / `create_sp_ad_group` | `amazon_sa_campaign_create:write` | Create new SP campaigns in bulk or add ad groups to existing SP campaigns |
+| [xnurta-query-ads-performance](xnurta-query-ads-performance/) | 1.4.10 | `get_ads_perf` | `amazon_sa_performance_data:read` | Query ad performance metrics: spend, ACOS, ROAS, trends, rankings, period comparison, hourly (AMS) and keyword × placement breakdowns, plus Vendor ASIN metric semantics (shipped/ordered, distributorView/sellingProgram) |
+| [xnurta-query-entity-metadata](xnurta-query-entity-metadata/) | 1.4.10 | `get_entity_metadata` | `amazon_sa_ads_configuration:read` | Query entity configuration and delivery status, campaign budget usage (remaining budget / budget status / capped time), category and brand targeting IDs, SB and SD creation entities, managed-group schedules, enabled campaign automation-rule types, and rule-mode rule configuration |
+| [xnurta-query-operation-log](xnurta-query-operation-log/) | 1.3.9 | `get_operation_log` | `amazon_sa_ads_logs:read` | Query operation logs: human and AI bid, budget, and status changes (including the timestamp timezone rules) |
+| [xnurta-create-ai-group](xnurta-create-ai-group/) | 1.2.5 | `create_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` / `get_sp_sb_ai_personality_recommendation` | `amazon_sa_managed_group:write` | Create SP, SB, or SD AI managed groups, optionally from a platform template recommended by campaign purpose, and with an SP/SB schedule |
+| [xnurta-edit-ai-group](xnurta-edit-ai-group/) | 1.2.5 | `edit_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` / `get_sp_sb_ai_personality_recommendation` | `amazon_sa_managed_group:write` | Edit one or multiple AI managed groups, apply templates (recommended by campaign purpose), manage SP/SB schedules |
+| [xnurta-delete-ai-group](xnurta-delete-ai-group/) | 1.0.10 | `delete_ai_managed_group` | `amazon_sa_managed_group_delete:write` | Delete a managed group and release or migrate its campaigns |
+| [xnurta-edit-ads](xnurta-edit-ads/) | 1.2.0 | `batch_update_ads` | `amazon_sa_campaign_edit:write` | Edit campaign budget / state / bidding / portfolio membership, portfolio budgets and dates, campaign name / end date, ad group state / name / default bid, keywords, targets, promoted products and negatives (29 routes, 13 may need two-phase confirmation) |
+| [xnurta-create-campaign](xnurta-create-campaign/) | 1.1.0 | `create_sp_sb_campaign` / `create_sd_campaign` / `create_sp_ad_group` / `create_sb_ad_group` / `create_sd_ad_group` / `create_portfolio` | `amazon_sa_campaign_create:write` | Create new SP / SB / SD campaigns, add ad groups to existing campaigns, create portfolios |
 
 ## Optional Skills
 
@@ -24,12 +24,12 @@ Advanced analyses built on the required query Skills — add as needed once thos
 
 | Skill | Version | Purpose |
 |-------|---------|---------|
-| [xnurta-weekly-ads-report](xnurta-weekly-ads-report/) | 1.1.5 | Weekly ads report: KPI card with WoW comparison, 7-day trend, anomaly summary, top movers, next-week actions |
-| [xnurta-monthly-ads-report](xnurta-monthly-ads-report/) | 1.2.2 | Monthly ads report: full-month KPIs (MoM + YoY), structural breakdown, product and keyword analysis, next-month recommendations |
-| [xnurta-ads-structure-analysis](xnurta-ads-structure-analysis/) | 1.1.6 | Structure analysis: break down spend and efficiency by campaign type / marketplace / portfolio / weekday / hour-of-day and locate structural mismatches |
-| [xnurta-product-diagnosis](xnurta-product-diagnosis/) | 1.2.3 | Product diagnosis: portfolio tiering plus a separate lifecycle stage (SP advertising age + 12-week total-sales trend), variant comparison, diagnostic cards for underperformers, keep/optimize/cut recommendations |
+| [xnurta-weekly-ads-report](xnurta-weekly-ads-report/) | 1.1.6 | Weekly ads report: KPI card with WoW comparison, 7-day trend, anomaly summary, top movers, next-week actions |
+| [xnurta-monthly-ads-report](xnurta-monthly-ads-report/) | 1.2.3 | Monthly ads report: full-month KPIs (MoM + YoY), structural breakdown, product and keyword analysis, next-month recommendations |
+| [xnurta-ads-structure-analysis](xnurta-ads-structure-analysis/) | 1.1.7 | Structure analysis: break down spend and efficiency by campaign type / marketplace / portfolio / weekday / hour-of-day and locate structural mismatches |
+| [xnurta-product-diagnosis](xnurta-product-diagnosis/) | 1.2.4 | Product diagnosis: portfolio tiering plus a separate lifecycle stage (SP advertising age + 12-week total-sales trend), variant comparison, diagnostic cards for underperformers, keep/optimize/cut recommendations |
 | [xnurta-search-term-diagnosis](xnurta-search-term-diagnosis/) | 1.0.4 | Search-term diagnosis: tag search terms by orders, brand / non-brand and keyword / ASIN; report spend distribution, negative and harvest candidates and fragmented exact keywords, with thresholds from the store's order value and target ACOS |
-| [xnurta-promo-reset](xnurta-promo-reset/) | 1.0.4 | Promo reset: find every bid, budget, placement and managed-group setting a person changed for a promotion and its pre-promo value from the operation log, restore all at once or, as the user chooses, suggest restore now / step down over days / customer decides from post-promo performance, then apply with preview and read-back |
+| [xnurta-promo-reset](xnurta-promo-reset/) | 1.0.5 | Promo reset: find every bid, budget, placement and managed-group setting a person changed for a promotion and its pre-promo value from the operation log, restore all at once or, as the user chooses, suggest restore now / step down over days / customer decides from post-promo performance, then apply with preview and read-back |
 
 ## Versions
 
@@ -39,7 +39,7 @@ Advanced analyses built on the required query Skills — add as needed once thos
   https://raw.githubusercontent.com/Xnurta/Xnurta-MCP/main/skills/manifest.json
   ```
 
-- **For humans**: each Skill's version is in the `metadata.version` field of its `SKILL.md` frontmatter; overall history is in [CHANGELOG.md](../CHANGELOG.md).
+- **For humans**: each Skill's version is in the `metadata.version` field of its `SKILL.md` frontmatter; overall history is in [CHANGELOG.md](../CHANGELOG.md) — that path resolves in the published layout (`skills/README.md` next to the repository root `CHANGELOG.md`), not when browsing this folder in the source repository.
 - **For AI agents**: when installing, updating, or configuring Skills from this repository, compare each installed Skill's local `SKILL.md` `metadata.version` with the matching entry in the manifest above. If the local version is lower, list the outdated Skills and tell the user to update them. Do not repeat this check during normal MCP queries.
 - **Release baseline**: when preparing a release, use the online `manifest.json` on the `main` branch as the version baseline. Combine multiple local fixes in the same unreleased batch into one version bump instead of incrementing from an unpublished local version.
 - On every release, `manifest.json` and the frontmatter are updated together, with a matching git tag / GitHub Release.

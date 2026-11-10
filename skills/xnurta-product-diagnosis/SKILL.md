@@ -10,7 +10,7 @@ description: >-
   "ASIN health check". Not for account-wide structural share analysis (use xnurta-ads-structure-analysis)
   or periodic WoW/MoM recaps (use xnurta-weekly-ads-report / xnurta-monthly-ads-report).
 metadata:
-  version: 1.2.3
+  version: 1.2.4
 ---
 
 # Product Diagnosis
@@ -175,7 +175,7 @@ the week, and ask; drop the label only after the user confirms.
 
 ### Step 1 · Define the Analysis Window
 
-Default: trailing 30 days ending yesterday (T+2 delay — note if the window's end is within 2 days of today, the most recent day(s) may be incomplete). If the user gives an explicit range, confirm it satisfies the 90-day span / 15-month lookback caps before issuing the call; split into multiple ≤90-day calls if it doesn't, per the standard procedure.
+Default: trailing 30 days ending yesterday (the current store-local day is still accumulating, and conversions for the last 7-14 days are still being attributed). If the user gives an explicit range, confirm it satisfies the 90-day span / 15-month lookback caps before issuing the call; split into multiple ≤90-day calls if it doesn't, per the standard procedure.
 
 **Also define a comparison window** (immediately preceding period, same length) — needed for Step 5's diagnostic correlation and the period-over-period figures in the ranking. Same equal-length-prior-period discipline as the report skills.
 
@@ -299,7 +299,9 @@ Either way, fix the call rather than interpreting the result. A portfolio-level 
   period, which is exactly the behaviour this axis exists to remove.
 - **Align both ends to week boundaries** — start on a Monday, end on a Sunday — or the first
   and last buckets are partial weeks, and that trailing partial week reads as a decline that
-  isn't there. Under the T+2 rule the last complete week is usually the week before last.
+  isn't there. And "complete" differs by metric: traffic is complete once the week has
+  passed in the store's timezone, but **conversions keep accruing for 7-14 days after the
+  click** depending on ad type, so the most recent full week is still conversion-provisional.
 - **12 weeks, not 13**: 84 days fits one call; 13 weeks is 91 days and exceeds `get_ads_perf`'s
   90-day span cap, turning every lifecycle run into a two-call merge for one extra week of signal.
 - **Year-over-year companion call** (for Step 3's seasonality check): same shape with both dates
@@ -576,7 +578,7 @@ answer".
 # Product Diagnosis · {profile_name}
 **Granularity**: {asin / parentAsin / variant}  **Scope**: {topN / all / specified ASINs / underperformers only}
 **Period**: {dateStart} ~ {dateEnd}
-{If data may be incomplete due to T+2 delay, or a section is based on a partial sample, note it here}
+{If conversion figures for the window are still maturing, or a section is based on a partial sample, note it here}
 {When profileIds covers multiple stores, use the store list or "{N} stores" in the title and attribute rows in the Store column below.}
 
 ## 1. Product ranking
