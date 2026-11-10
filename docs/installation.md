@@ -71,7 +71,7 @@ If your client doesn't let the AI configure itself, follow the manual setup belo
 1. Switch to the **Code** tab.
 2. Select **+ → Plugins → Add plugin** next to the prompt box to open the plugin browser.
 3. Under **Marketplaces**, add a repository and enter `Xnurta/Xnurta-MCP`.
-4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 12 Skills together.
+4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 14 Skills together.
 
 > **Note:** Claude Code Desktop does not support the `/plugin` command. It is available only in Claude Code CLI; use the desktop plugin browser instead.
 
@@ -81,7 +81,7 @@ If your client doesn't let the AI configure itself, follow the manual setup belo
 2. Select **Add → Add a marketplace** in the upper-right corner.
 3. Enter `Xnurta/Xnurta-MCP` and add the marketplace.
 4. In **Plugins**, find the marketplace you added and install **Xnurta MCP**.
-5. Start a new Codex task. The MCP server and all 12 Skills will be available in the new task.
+5. Start a new Codex task. The MCP server and all 14 Skills will be available in the new task.
 
 > **Note:** ChatGPT Desktop Codex does not support `/plugin` or `/plugins`. `/plugins` is available only in Codex CLI; use Plugins in the left sidebar of the desktop app.
 
@@ -105,7 +105,7 @@ codex
 
 In Codex CLI, enter `/plugins`, select **Xnurta MCP** from the `xnurta` marketplace, install it, and then start a new session.
 
-The plugin installs the MCP server and all 12 Skills together. The current Plugin configuration uses `XNURTA_TOKEN`; set the environment variable and start a new session. To use OAuth, follow the OAuth setup below.
+The plugin installs the MCP server and all 14 Skills together. The current Plugin configuration uses `XNURTA_TOKEN`; set the environment variable and start a new session. To use OAuth, follow the OAuth setup below.
 
 ### Option 3 · Manual setup
 
@@ -280,7 +280,7 @@ Skills live in this repo's [`skills/`](../skills/) directory, in two tiers:
 - `xnurta-edit-ai-group` — edit one or multiple AI managed groups
 - `xnurta-delete-ai-group` — delete AI managed groups
 - `xnurta-edit-ads` — edit supported live campaign, keyword, target, promoted-product, and negative-targeting settings
-- `xnurta-create-campaign` — create SP campaigns with ad groups, advertised products, targeting, negative targeting, placements, and optional AMC audiences
+- `xnurta-create-campaign` — create SP, SB, or SD campaigns with ad groups, advertised products, targeting, negative targeting, placements, and optional AMC audiences; add ad groups to existing campaigns of any type; create portfolios
 
 **Optional (6)** — advanced analysis and operational playbooks; add as needed after the required ones (under [`skills/`](../skills/)):
 

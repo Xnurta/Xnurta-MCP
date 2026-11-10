@@ -2,7 +2,7 @@
 
 Bring Xnurta's advertising capabilities into your own AI agent (Claude, ChatGPT, and more) and make your data part of your workflow — query data, run analyses, and calculate true profitability in plain language, combining your own costs, margins, and goals. After authorization, there is no need to repeatedly sign in to the platform, export spreadsheets, or switch between systems.
 
-The current Xnurta MCP v1.3.6 supports data queries, AI managed-group management, SP campaign and ad group creation, and live Amazon Sponsored Ads editing. You can create SP campaigns with ad groups, advertised products, targeting, and placement settings, or add new ad groups to an existing SP campaign; update campaign budgets, status, and SP bidding strategies; change portfolio membership, portfolio budgets and flight dates, and ad group state; and manage keywords, targets, promoted products, and negative targeting. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported; archiving a campaign through a status update is supported.
+The current Xnurta MCP v1.3.7 supports data queries, AI managed-group management, SP/SB/SD campaign and ad group creation, portfolio creation, and live Amazon Sponsored Ads editing. You can create SP, SB, or SD campaigns with ad groups, advertised products, targeting, and placement settings, or add new ad groups to an existing campaign of any type, and create portfolios; update campaign budgets, status, and SP bidding strategies; change portfolio membership, portfolio budgets and flight dates, and ad group state; and manage keywords, targets, promoted products, and negative targeting. Using a separate campaign-delete operation is not supported; archiving a campaign through a status update is supported.
 
 ---
 
@@ -12,7 +12,7 @@ The current Xnurta MCP v1.3.6 supports data queries, AI managed-group management
 - **Calculate true profitability with your own data** — hand your costs / margins / goals to the AI and let it pull ad spend: "based on real margins, which campaigns are losing money — cut or scale?" Questions that require combining ad data with your own business data are exactly what the platform alone can't answer.
 - **Codify your own playbook** — save frequent questions as templates, or even schedule a weekly report routine that runs every Monday.
 - **Manage AI managed groups** — create, edit, or delete managed groups after explicit confirmation, then read back the resulting state.
-- **Create SP campaigns** — create SP campaigns with ad groups, advertised products, automatic, keyword, or product targeting, negative targeting, and placement settings after reviewing the complete structure.
+- **Create SP, SB, or SD campaigns** — create campaigns of any supported type with ad groups, advertised products, automatic, keyword, or product targeting, negative targeting, and placement settings, and create portfolios, after reviewing the complete structure.
 - **Edit live ad entities** — update campaign budgets, status, SP bidding strategies, placement adjustments, and AMC audience bid adjustments; adjust keyword or target bids; and manage promoted products or negative targeting. Writes take effect on the live account, so the assistant must confirm the target and exact change first.
 - **Diagnose search terms** — classify search terms with reproducible rules, identify wasted spend, negative and harvest candidates, and fragmented exact-keyword coverage using thresholds derived from order value and target ACOS.
 - **Reset promotion changes safely** — recover human bid, budget, placement, and managed-group changes made for a promotion, then restore all changes or stage the reset by post-promotion performance with preview and read-back.
@@ -25,7 +25,7 @@ The current Xnurta MCP v1.3.6 supports data queries, AI managed-group management
 | **Entity configuration / metadata** | Campaigns, ad groups, targets, advertised products, ASINs, managed groups, product lines |
 | **Operation logs** | Human and AI action history, filterable by operator, action type, entity, and time window |
 | **AI managed-group management** | Create, edit, and delete SP, SB, and SD managed groups; update supported optimization targets, budgets, campaign membership, and AI action-space settings |
-| **Ad entity management** | Create SP campaigns; update campaign budgets, status, SP bidding strategies, placement adjustments, and AMC audience bid adjustments; manage keyword and target status and bids; archive promoted products; create, copy, or update supported negative targeting |
+| **Ad entity management** | Create SP, SB, or SD campaigns and portfolios; update campaign budgets, status, SP bidding strategies, placement adjustments, and AMC audience bid adjustments; manage keyword and target status and bids; archive promoted products; create, copy, or update supported negative targeting |
 
 ---
 
@@ -105,7 +105,7 @@ MCP Tools determine *what data the AI can get*; Skills determine *how well the A
 | [xnurta-edit-ai-group](skills/xnurta-edit-ai-group/) | `edit_sd_ai_managed_group` / `save_sp_sb_ai_managed_group` / `save_sp_sb_ai_group_schedule` / `get_ai_group_template` | Edit one or multiple AI managed groups, apply templates, manage SP/SB schedules |
 | [xnurta-delete-ai-group](skills/xnurta-delete-ai-group/) | `delete_ai_managed_group` | Delete a managed group and release or migrate its campaigns |
 | [xnurta-edit-ads](skills/xnurta-edit-ads/) | `batch_update_ads` | Edit live campaign settings, keyword and target bids/status, promoted products, and negative targeting; protected operations require explicit two-phase confirmation |
-| [xnurta-create-campaign](skills/xnurta-create-campaign/) | `create_sp_sb_campaign` | Create SP campaigns with ad groups, advertised products, automatic/keyword/product targeting, negative targeting, placements, and optional AMC audiences |
+| [xnurta-create-campaign](skills/xnurta-create-campaign/) | `create_sp_sb_campaign` / `create_sd_campaign` / `create_sp_ad_group` / `create_sb_ad_group` / `create_sd_ad_group` / `create_portfolio` | Create SP, SB, or SD campaigns with ad groups, advertised products, automatic/keyword/product targeting, negative targeting, placements, and optional AMC audiences; add ad groups to existing campaigns of any type; create portfolios |
 
 **Optional (6)** — advanced analysis and operational playbooks; add as needed once the required Skills are installed:
 
@@ -147,7 +147,7 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 ## Current version boundaries
 
 - **Writes take effect immediately**: managed-group and ad-entity writes directly change live configuration. Grant write or delete access only to trusted users; verify the profile, object, and exact change, obtain explicit confirmation where required, and read back the result.
-- **Write scope**: the current version manages AI managed groups, creates SP campaigns, and edits supported ad entities. Campaign budget, status, SP bidding strategy, placement adjustments, and AMC audience bid adjustments can be edited, including archiving through a status update. Creating SB/SD campaigns and using a separate campaign-delete operation are not supported.
+- **Write scope**: the current version manages AI managed groups, creates SP/SB/SD campaigns and portfolios, and edits supported ad entities. Campaign budget, status, SP bidding strategy, placement adjustments, and AMC audience bid adjustments can be edited, including archiving through a status update. Using a separate campaign-delete operation is not supported.
 - **Not supported yet**: word-list settings; creating or editing reusable template definitions; modifying RBA rule configuration (**reading it is supported**). Existing templates can be read and used to create or edit managed groups. Managed-group scheduling is now supported for SP/SB only. Action space can be switched from RBA to AI, but still not from AI to RBA.
 - **Scope**: the stores you can query match your Xnurta account (main / sub-account) permissions.
 - **History**: roughly the most recent 15 months of performance data and logs.
@@ -166,7 +166,7 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 1. Switch to the **Code** tab.
 2. Select **+ → Plugins → Add plugin** next to the prompt box to open the plugin browser.
 3. Under **Marketplaces**, add a repository and enter `Xnurta/Xnurta-MCP`.
-4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 12 Skills together.
+4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 14 Skills together.
 
 > Claude Code Desktop does not support the `/plugin` command. `/plugin` is for Claude Code CLI only; use the desktop plugin browser instead.
 
@@ -176,7 +176,7 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 2. Select **Add → Add a marketplace** in the upper-right corner.
 3. Enter `Xnurta/Xnurta-MCP` and add the marketplace.
 4. In **Plugins**, find the marketplace you added and install **Xnurta MCP**.
-5. Start a new Codex task. The MCP server and all 12 Skills will be available in the new task.
+5. Start a new Codex task. The MCP server and all 14 Skills will be available in the new task.
 
 > ChatGPT Desktop Codex does not support `/plugin` or `/plugins`. `/plugins` is for Codex CLI only; use Plugins in the left sidebar of the desktop app.
 
@@ -200,7 +200,7 @@ codex
 
 In Codex CLI, enter `/plugins`, select **Xnurta MCP** from the `xnurta` marketplace, install it, and then start a new session.
 
-The plugin installs the MCP server and all 12 Skills together. The current Plugin configuration uses `XNURTA_TOKEN`. To use OAuth, follow the [OAuth setup](docs/installation.md#oauth) in the installation guide.
+The plugin installs the MCP server and all 14 Skills together. The current Plugin configuration uses `XNURTA_TOKEN`. To use OAuth, follow the [OAuth setup](docs/installation.md#oauth) in the installation guide.
 
 ### Generic MCP clients
 
