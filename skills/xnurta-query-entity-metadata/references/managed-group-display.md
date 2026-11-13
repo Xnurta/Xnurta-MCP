@@ -40,9 +40,9 @@ selected option. Map from `targetType` rather than copying a returned enum text 
 | `1` | Drive growth | Increase sales |
 | `2` | Optimize ROAS | Drive efficiency |
 | `3` | Promotion sales boost | Increase sales |
-| `4` | *(legacy value, no longer offered in the UI)* | — |
+| `4` | Drive growth (budget utilization priority) | Increase sales |
 
-A group read back with `targetType=4` is a **legacy value from before the current objective UI** — not a current option, and not the same thing as the separate "Budget utilization priority (Beta)" toggle (which is an independent switch, not part of `targetType`; see the create/edit skills' enum reference). Don't render a customer-facing objective name for it. Say the group predates the current objective options and, if the user wants to act on it, that changing it requires selecting one of `1`-`3`.
+A group read back with `targetType=4` is **Drive growth with budget utilization priority (预算优先消耗) turned on** — a live, gated variant of `1`. Earlier guidance here called it a legacy value and told you to say the group predates the current objective options; **that was wrong - do not say it.** Three things belong in the answer instead: (1) the group runs the aggressive budget-utilization variant of Drive growth, which trades ACOS for budget utilization; (2) **its AI personality is locked to `5` at runtime while `aiPersonality` still returns the stored value** - never report the returned personality as what the AI is actually doing; (3) the mode can also come from 预算管理 Auto Pacing, which switches on every AI-enabled group in the budget group at once and cannot be turned off for one group, so don't assume the customer set it here. The create/edit skills' `enum-i18n.md` has the full behaviour.
 
 For value `2`, render:
 

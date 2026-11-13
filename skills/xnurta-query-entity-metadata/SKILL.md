@@ -13,7 +13,7 @@ description: >-
   over budget, budget status, budget capped, in-budget time, when did it run out of budget,
   budget pacing, budget exhausted, budget cap hit, time spent capped
 metadata:
-  version: 1.4.10
+  version: 1.4.11
 ---
 
 # Query Entity Metadata Skill
@@ -450,7 +450,7 @@ treated as a field name, so an `AND` or `OR` key is sent downstream as a field a
 
 **Note on `like`**: any `%` you include is stripped and replaced with an automatic leading+trailing `%` — the match is always "contains" regardless of where you place `%`.
 
-**`ilike` is not supported by this tool.** The filter operators accepted here are `in`, `notin`, `like`, `!=` / `ne`, `>=` and `<=`; anything else is rejected as `Unsupported filter operator for field '<field>': [...]`, which echoes what you sent and does **not** list the allowed set. Do not carry `ilike` over from `get_ads_perf` - the two tools handle text matching differently; here `like` already matches case-insensitively (see the table above), so there is nothing for `ilike` to add.
+**`ilike` is not supported by this tool.** The filter operators accepted here are `in`, `notin`, `like`, `!=` / `ne`, `>=` and `<=`; anything else is rejected as `Unsupported filter operator for field '<field>': [...]`, which echoes what you sent and, for an unknown operator, then lists the supported forms (a bare value for equality, an array or `{"in": [...]}`, `{"notin": [...]}`, `{"like": "..."}`, `{"!=": v}` / `{"ne": v}`, or `{">=": a, "<=": b}` together); operator keys are case-sensitive. A **lone `>=` or `<=`** gets the same message prefix but **no list of supported forms** and no hint about the missing pair: always send both bounds together. Do not carry `ilike` over from `get_ads_perf` - the two tools handle text matching differently; here `like` already matches case-insensitively (see the table above), so there is nothing for `ilike` to add.
 
 ## Enum "Text" Companion Fields
 
@@ -544,7 +544,7 @@ On error, the response instead follows the shared error envelope described in Pl
 - `profileIds` is **required**. Always call `get_user_authorized_context` first. If the user doesn't name a store, pass all authorized `profileIds`
 - **Every requested `profileId` must be authorized** — one bad value fails the whole call. `aiGroup_schedule` additionally requires exactly one
 - `aiGroup` results are a **projection of the currently effective config** (trimmed by ad type, then reduced to what's actually in effect) — an absent field means "not in effect", not "unset" and not "write failed". See the dedicated section above
-- Rule-mode (RBA) rule configuration **is readable** under `aiGroup`'s `aiAutomation.{ruleType}`; it is **not writable** through any MCP tool
+- Rule-mode (RBA) rule configuration **is readable** under `aiGroup`'s `aiAutomation.{ruleType}`; you **cannot author or edit** rule conditions / actions through any MCP tool, but applying a platform template (`save_sp_sb_ai_managed_group` with `templateId`) carries the template's own Rule-mode rules into the group - rules 4 / 5 in Rule mode are rejected
 - No `dateStart`/`dateEnd` or `metrics` needed — and no historical/point-in-time snapshot capability either (no date params of any kind on this tool)
 - `groupBy` is not applicable here — this tool returns entity rows, not aggregates
 - User says "ASIN" -> default to child ASIN, use entity `asin`, field `asin`
