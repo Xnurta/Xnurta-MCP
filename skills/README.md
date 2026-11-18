@@ -3,7 +3,7 @@
 Official Skills for use with Xnurta MCP, in two tiers:
 
 - **Required (8)**: core query, managed-group management, and ad-editing capabilities — always install these.
-- **Optional (6)**: advanced playbooks for specific scenarios (reports, product diagnosis, search-term diagnosis, promo reset, and more); install as needed.
+- **Optional (8)**: advanced playbooks for specific scenarios (reports, product diagnosis, search-term diagnosis, promo prep, monitoring and reset, and more); install as needed.
 
 ## Required Skills
 
@@ -29,7 +29,9 @@ Advanced analyses built on the required query Skills — add as needed once thos
 | [xnurta-ads-structure-analysis](xnurta-ads-structure-analysis/) | 1.1.7 | Structure analysis: break down spend and efficiency by campaign type / marketplace / portfolio / weekday / hour-of-day and locate structural mismatches |
 | [xnurta-product-diagnosis](xnurta-product-diagnosis/) | 1.2.4 | Product diagnosis: portfolio tiering plus a separate lifecycle stage (SP advertising age + 12-week total-sales trend), variant comparison, diagnostic cards for underperformers, keep/optimize/cut recommendations |
 | [xnurta-search-term-diagnosis](xnurta-search-term-diagnosis/) | 1.0.4 | Search-term diagnosis: tag search terms by orders, brand / non-brand and keyword / ASIN; report spend distribution, negative and harvest candidates and fragmented exact keywords, with thresholds from the store's order value and target ACOS |
-| [xnurta-promo-reset](xnurta-promo-reset/) | 1.0.6 | Promo reset: find every bid, budget, placement and managed-group setting a person changed for a promotion and its pre-promo value from the operation log, restore all at once or, as the user chooses, suggest restore now / step down over days / customer decides from post-promo performance, then apply with preview and read-back |
+| [xnurta-promo-prep](xnurta-promo-prep/) | 1.0.0 | Promo prep: check stock against event demand, portfolio caps, campaigns already out of budget and managed-group schedules; size the push to the user's event budget; prepare role-matched dated schedules for eligible SP/SB managed groups (Promotion sales boost only for head groups the user confirms; others on Drive growth or kept on Optimize ROAS) and budget / bid / top-of-search raises for the rest, with a product-line summary, preview and change log |
+| [xnurta-promo-monitor](xnurta-promo-monitor/) | 1.0.0 | Promo monitor: on event days, read today's hourly pace and budget usage against a normal day, flag winners about to run out of budget, spend without orders, campaigns over the limit, low stock and today's pauses, and propose small capped moves for the user's current goal; answers "can I pause these targets" and "restocks next week - keep spending?" |
+| [xnurta-promo-reset](xnurta-promo-reset/) | 1.1.0 | Promo reset: find every bid, budget, placement and managed-group setting a person changed for a promotion and its pre-promo value from the operation log, restore all at once or, as the user chooses, suggest restore now / step down over days / customer decides from post-promo performance; or restore from the customer's own uploaded record; then apply with preview and read-back |
 
 ## Versions
 
@@ -67,6 +69,8 @@ skills/
 ├── xnurta-ads-structure-analysis/    # optional
 ├── xnurta-product-diagnosis/         # optional
 ├── xnurta-search-term-diagnosis/     # optional
+├── xnurta-promo-prep/                # optional
+├── xnurta-promo-monitor/             # optional
 └── xnurta-promo-reset/               # optional
 ```
 

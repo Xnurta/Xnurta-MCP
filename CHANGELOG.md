@@ -4,6 +4,15 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
 
 ## [Unreleased]
 
+### Added
+
+- Added `xnurta-promo-prep` `1.0.0` and `xnurta-promo-monitor` `1.0.0` for event readiness planning, role-matched managed-group schedules, hourly pacing checks, and confirmed in-event adjustments.
+
+### Changed
+
+- Updated `xnurta-promo-reset` to `1.1.0` with complete change-log recovery, schedule-aware restoration, stale checks, resumable execution, undo planning, and customer-facing structured/HTML reports.
+- Aligned `xnurta-edit-ai-group` with active-schedule updates used by the promotion workflows.
+
 ## [1.3.7] - 2026-11-10
 
 ### Added

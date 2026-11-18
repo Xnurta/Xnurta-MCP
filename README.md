@@ -116,6 +116,8 @@ MCP Tools determine *what data the AI can get*; Skills determine *how well the A
 | [xnurta-ads-structure-analysis](skills/xnurta-ads-structure-analysis/) | Structure analysis: locate structural mismatches across campaign type / marketplace / portfolio / weekday / hour-of-day dimensions and campaign-size tiers |
 | [xnurta-product-diagnosis](skills/xnurta-product-diagnosis/) | Product diagnosis: ASIN health tiering, variant comparison, keep/optimize/cut recommendations |
 | [xnurta-search-term-diagnosis](skills/xnurta-search-term-diagnosis/) | Search-term diagnosis: classify search terms and surface spend distribution, negative and harvest candidates, and fragmented exact keywords using store-specific thresholds |
+| [xnurta-promo-prep](skills/xnurta-promo-prep/) | Promotion preparation: check readiness, size the plan to the event budget, and prepare role-matched managed-group schedules plus confirmed budget, bid, and placement changes |
+| [xnurta-promo-monitor](skills/xnurta-promo-monitor/) | Promotion monitoring: compare hourly delivery with the normal pace, identify budget, efficiency, and inventory risks, and propose small confirmed adjustments |
 | [xnurta-promo-reset](skills/xnurta-promo-reset/) | Promotion reset: recover human changes and pre-promotion values, then restore them all at once or stage the reset by post-promotion performance with preview and read-back |
 
 **How to install** (either way):
