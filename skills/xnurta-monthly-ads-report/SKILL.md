@@ -6,10 +6,11 @@ description: >-
   site / portfolio share), product analysis (Top ASIN changes, newly advertised products, long-tail), keyword
   performance (Top keywords; search-term negatives / harvesting go to xnurta-search-term-diagnosis),
   an issues list with attribution, and next-month structural recommendations. Use when the user asks
-  for a monthly report, monthly recap, or this month's performance. Not for weekly recaps (use xnurta-weekly-ads-report) or
-  quarterly/QBR-level strategic review (use quarterly-ads-report, not yet built).
+  for a monthly report, monthly recap, or this month's performance. Not for weekly recaps (use xnurta-weekly-ads-report),
+  quarterly/QBR-level strategic review (use quarterly-ads-report, not yet built), or splitting
+  next month's budget by category against the market and peers (use xnurta-category-scorecard).
 metadata:
-  version: 1.2.3
+  version: 1.2.4
 ---
 
 # Monthly Ads Report

@@ -297,9 +297,8 @@ change a limit.
    cap is not returned by this read; check it in the platform." Missing data is not "no cap".
 5. **Brand protection from automatic negatives**: the read returns only the switches, under
    `aiActionSettings.targetOptimization`: `negativeTargetStatus` (add negatives on / off) and
-   `negativeTargetBlackListStatus` (the add-negatives word list on / off - documented as
-   read-only in the `xnurta-edit-ai-group` and `xnurta-create-ai-group` field references, not in
-   the query field reference; seen in an `aiGroup` read in 2026-11). The list itself
+   `negativeTargetBlackListStatus` (the add-negatives word list on / off; seen in an `aiGroup`
+   read in 2026-11). The list itself
    (`negativeTargetBlackList`, word-library ids) and `negativeTargetListType` are **not**
    returned (read 2026-11), so whether the confirmed own-brand spellings from check g are on it
    can never be checked here. Report per group:
@@ -312,8 +311,12 @@ change a limit.
 
    Never report it as passed, and never guess a field name. The brand-mode fields
    (`brandOptimization.brandedStatus`, `brandedList`, competitor fields) describe the group's
-   brand / competitor mode, not the add-negatives list. Do not edit managed-group word lists
-   through MCP - they are read-only. A schedule cannot carry them either: the server strips
-   `brandOptimization` and the word-list fields of `targetOptimization` from a schedule, which
-   keeps only its three switches and intensity fields - and an omitted switch is sent as `0`
+   brand / competitor mode, not the add-negatives list. Managed-group word lists **are** editable
+   through MCP (`xnurta-edit-ai-group`, by `keywordListId`) - earlier guidance calling them
+   read-only is out of date - but a promo health check is a read; propose the change, don't make
+   it here. A schedule **can** carry the exclusion lists now:
+   `targetOptimization` takes the six `*BlackList*` fields as well as its three switches and
+   intensity fields, and an omitted exclusion field is inherited field by field (a new schedule
+   from the group, an updated one from itself). Only `brandOptimization` is still stripped - the
+   group's brand setting applies in every period. An omitted *switch* is still sent as `0`
    (`xnurta-edit-ai-group` SKILL.md, schedule rule 2).

@@ -2,7 +2,27 @@
 
 This file tracks version changes for Xnurta MCP Skills and the accompanying documentation.
 
-## [Unreleased]
+## [1.4.0] - 2026-11-24
+
+### Added
+
+- Five new Skills, all at `1.0.0`:
+  - `xnurta-query-market-data` - Amazon market and peer data outside the account: SQP / ABA search-term demand, share and ABA top-3 via `get_market_search_perf`, and brand peer benchmarks (P25 / P50 / P75) via `get_peer_benchmark`. **Needs two new scopes, `sqp:read` and `benchmark:read`, each with its own menu permission** - a token issued before they existed has neither and must be re-authorized.
+  - `xnurta-category-scorecard` - compare every category against the market and brand peers, produce category plays, peer goal ranges and a budget plan. Read-only; execution goes to `xnurta-edit-ads` after confirmation.
+  - `xnurta-sqp-insight` - SQP market diagnosis plus a one-category growth or efficiency plan. Diagnose is read-only; plan writes only confirmed rows through the edit Skills.
+  - `xnurta-asin-deep-dive` - single-ASIN deep dive: traffic and ad structure, variants, stock and ACOS mechanism attribution, with platform SQP / ABA first and SellerSprite for broader comparisons.
+  - `xnurta-manage-keyword-list` - create, read, edit and delete keyword lists that campaigns and managed groups reference by id.
+
+### Changed
+
+- `xnurta-edit-ads` `1.2.0` -> `1.3.0`: keyword lists can be expanded into new keywords and negatives on live campaigns (`fromKeywordList`), with the route count and two-phase confirmation set updated.
+- `xnurta-create-campaign` `1.1.0` -> `1.2.0`: campaigns and ad groups can be created from a keyword list (`createFromKeywordList`).
+- `xnurta-search-term-diagnosis` `1.0.4` -> `1.1.0`: a negative candidate is now verified over 60 / 90 days before it becomes an action, and checked against keywords already running in the ad groups it spent in - an enabled keyword there means pause or lower the bid, not negate.
+- `xnurta-create-ai-group` and `xnurta-edit-ai-group` `1.2.6` -> `1.2.7`: a template's automation rules now merge per rule number instead of being replaced wholesale, the `isSelf=2` check runs on the merged result, and a schedule's `aiAutomation` rejects any explicit non-zero status.
+- `xnurta-query-entity-metadata` `1.4.11` -> `1.4.12`, `xnurta-delete-ai-group` `1.0.11` -> `1.0.12`, `xnurta-monthly-ads-report` `1.2.3` -> `1.2.4`, `xnurta-product-diagnosis` `1.2.4` -> `1.2.5`, `xnurta-promo-prep` `1.0.0` -> `1.0.1`.
+- `xnurta-query-ads-performance`, `xnurta-query-operation-log`, `xnurta-weekly-ads-report`, `xnurta-ads-structure-analysis`, `xnurta-promo-monitor` and `xnurta-promo-reset` are unchanged.
+
+## [1.3.7.1] - 2026-11-18
 
 ### Added
 

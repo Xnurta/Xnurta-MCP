@@ -10,7 +10,7 @@ description: >-
   the event and xnurta-promo-reset afterwards; use the edit skills for ordinary changes
   unrelated to a promotion.
 metadata:
-  version: 1.0.0
+  version: 1.0.1
 ---
 
 # Promo Prep
