@@ -8,8 +8,8 @@ description: >-
   One authorized store per call. This skill evaluates supplied terms; it cannot discover
   unnamed market terms. For the store's own ad metrics use xnurta-query-ads-performance;
   for campaign settings use xnurta-query-entity-metadata.
-  For an SQP audit, market-change explanation or one-category plan use xnurta-sqp-insight;
-  for a cross-category budget scorecard use xnurta-category-scorecard.
+  For targeted SQP diagnosis use xnurta-sqp-insight;
+  for performance and peer ranges in a specified category use xnurta-category-scorecard.
 metadata:
   version: 1.0.1
 ---

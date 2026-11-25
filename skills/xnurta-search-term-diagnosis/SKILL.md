@@ -10,7 +10,7 @@ description: >-
   "search term analysis", "negative keyword candidates", "harvest keywords". Not for
   trend recaps (xnurta-weekly-ads-report / xnurta-monthly-ads-report), campaign-type /
   marketplace structure (xnurta-ads-structure-analysis) or ASIN health
-  (xnurta-product-diagnosis). For market-level SQP diagnosis or plans use xnurta-sqp-insight.
+  (xnurta-product-diagnosis). For targeted market-level SQP diagnosis use xnurta-sqp-insight.
 metadata:
   version: 1.1.0
 ---

@@ -271,6 +271,8 @@ Skills live in this repo's [`skills/`](../skills/) directory, in two tiers:
 
 > **To AI agents:** before installing or updating, read [`skills/manifest.json`](../skills/manifest.json) and compare it with the `metadata.version` in each installed Skill's local `SKILL.md`. If a local version is lower, list the outdated Skills and tell the user to update them. Do not repeat this check during normal queries.
 
+Install from a checkout or ZIP and copy the **entire Skill directory recursively**. Do not fetch just `SKILL.md`. Verify that the installed version contains every file from the selected source directory, including nested `references/` and, for any Skill that ships them, `scripts/`. For these MCP-only Skills, explicitly check `xnurta-sqp-insight/references/data-sources.md` and `xnurta-category-scorecard/references/data-contract.md`. Replace the installed directory as a unit on upgrade so old scripts and instructions do not remain active. If any required file is missing, report an incomplete installation and reinstall the complete directory; a successful MCP connection is not successful Skill installation.
+
 **Required (8)** — covering core queries, managed-group management, SP campaign creation, and ad editing:
 
 - `xnurta-query-ads-performance` — ad performance queries
