@@ -12,7 +12,7 @@ This file tracks version changes for Xnurta MCP Skills and the accompanying docu
 - `xnurta-query-market-data` `1.0.0` -> `1.0.1`: ABA columns come only from weekly `marketSearchQuery` rows (`marketAsinQuery` and aggregated rows carry none), and an empty SQP result is reported as "tenant onboarding status to be confirmed" rather than as no demand.
 - `xnurta-monthly-ads-report` and `xnurta-search-term-diagnosis`: routing text updated to the narrower scope of the two Skills above; versions unchanged.
 - Claude Code plugin: `.mcp.json` now signs in with OAuth instead of reading `XNURTA_TOKEN` - existing plugin users sign in once in the browser after updating. Codex keeps `XNURTA_TOKEN`. To use an MCP Token in Claude Code, configure MCP manually (see the installation guide).
-- `.claude-plugin/plugin.json` declares `license` (MIT), `privacyPolicyUrl`, `homepage` and `repository`; the plugin has an icon (`.claude-plugin/icon.png`).
+- `.claude-plugin/plugin.json` declares `license` (MIT), `privacyPolicyUrl`, `homepage` and `repository`; the plugin now has a listing icon.
 - All Skill files use LF line endings, enforced by `.gitattributes`.
 - `xnurta-create-ai-group`, `xnurta-edit-ai-group` and `xnurta-weekly-ads-report`: placeholders such as `+$num` and `$Y` are written without a `$` sign, so they cannot be read as environment variables; versions unchanged.
 
