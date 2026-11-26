@@ -1,0 +1,280 @@
+# Two-phase confirmation
+
+Thirteen of the 29 routes can defer a write on the first call. Eight always do so; five do so
+only when the payload contains `state: "archived"`. They return a preview plus a
+`confirmToken`; the write happens only when you call again with that token.
+
+## Which routes, and when
+
+**Always (every call):**
+
+- `campaign` + `updateBudget`
+- `campaign` + `updateAudienceBid` (including 0% and changes to an existing binding)
+- `campaign` + `updatePlacementBid` (including 0%)
+- `keyword` + `updateBid`
+- `target` + `updateBid`
+- `adGroup` + `updateBid` (SP / SD only)
+- `productAd` + `archive`
+- `portfolio` + `updateBudget`
+
+**Only when the payload contains `state: "archived"`:**
+
+- `campaign` + `updateStatus` (looks in `request.data`)
+- `keyword` + `updateStatus` (`request.data`)
+- `target` + `updateStatus` (`request.data`)
+- `negativeTarget` + `updateStatus` (`request.data`)
+- `negativeKeyword` + `updateStatus` (**`request.updates`**)
+
+The other sixteen routes execute immediately. `productAd + updateStatus` cannot reach
+`archived` at all. `adGroup + updateStatus` does accept `archived`, but that route still
+executes directly; get the user's approval before calling it because archival is irreversible.
+
+Case variants of `archived` (`"Archived"`, `" archived"`) are **rejected up front** with
+`invalid_params`. They do not skip confirmation and they do not execute. Send exactly
+`archived`.
+
+## The protocol
+
+```
+Phase 1: batch_update_ads(entity, action, request, userContext)
+         -> isError:false, data.status == "PENDING_CONFIRMATION"
+                           data.confirmToken == "<uuid>"
+                           data.notice, data.affectedCount, data.details
+         Show this to the user. Get an explicit yes.
+
+Phase 2: batch_update_ads(entity, action, request + {confirmToken}, userContext)
+         -> the normal write result
+```
+
+Rules:
+
+- **Everything except `confirmToken` must be identical.** The token is bound to a
+  fingerprint over `entity` + `action` + `request` (with `confirmToken` excluded). Change
+  one value - even reordering that changes a value, or "fixing" a field the preview made you
+  reconsider - and Phase 2 fails. To change anything, re-run Phase 1.
+- `userContext` is **not** part of the fingerprint, so it may differ. Keep it the same
+  anyway; the audit log reads better.
+- `confirmToken` goes **inside `request`**, not beside it.
+- The token is an **opaque UUID with no prefix**. Do not validate its shape, do not parse it,
+  do not log it, do not show it to the user.
+- **TTL is 5 minutes**, single use, bound to the user who ran Phase 1. Another user's token
+  will not work.
+- **By default, do not call Phase 2 until the user says yes to the specific preview you
+  showed.** If they decline or go quiet, stop - do not call again, and do not re-preview
+  hoping for a different answer. If the user has explicitly waived confirmation under the
+  rules in SKILL.md, verify the preview yourself (see "Running Phase 2 unattended" below)
+  and proceed without waiting for another reply. Either way the `confirmToken` round trip
+  still happens - there is no way to skip it.
+- Do not run two Phase 2 calls for the same token concurrently.
+
+### When the user changes the scope after seeing the preview
+
+This is the common case, and it is not a token problem to solve - it is a new operation:
+
+- "only change the second one" / "drop that one" / "add one more" all change `request`, so the old token cannot be
+  used for the new scope. Sending Phase 2 with a modified request **burns the token and
+  writes nothing**. Do not try it.
+- Re-read the current state (time has passed, and the archived guard fails closed), then run
+  a **fresh Phase 1** and get a yes to the new preview.
+- Say out loud what dropped out of scope - "1001 will not be archived" - rather than letting
+  a smaller count speak for itself.
+- If the change is ambiguous ("the second one" when the preview held one item), **ask**; do
+  not map it onto a row yourself, least of all for an irreversible action.
+
+### When the user defers
+
+"hold on" / "let me look first" is neither a yes nor a no. Do not call Phase 2, and do not re-preview to
+prompt them. If they come back within the 5-minute TTL with a plain yes and **nothing has
+changed**, the original token is still valid. If they come back later, or with any change,
+start again from Phase 1. Do not tell them whether a token is still alive - just re-preview
+if you need to.
+
+## When the token survives a failure and when it does not
+
+Split these by **where** the failure happens. The routes that validate the whole batch up
+front reject before the token is touched at all.
+
+**Rejected before the token is consumed** - it stays usable within the TTL:
+
+| Failure | Applies to |
+|---|---|
+| Top-level `request.profileIds` authorization rejection | every route |
+| Archived-state guard rejection | every route |
+| Wrong / unregistered route | every route |
+| Any field, enum, or **nested item `profileId`** rejection | `keyword` + `updateBid` / `updateStatus`, `target` + `updateBid` / `updateStatus`, `negativeKeyword` + `updateStatus` - these validate the whole batch before confirmation |
+
+**Consumed** - re-run Phase 1:
+
+| Failure | Note |
+|---|---|
+| Fingerprint mismatch (you changed a parameter) | |
+| Different user | |
+| Expired / not found | the token is gone either way |
+| Nested item's `profileId` rejected on **any other** route | that check runs inside the strategy, after the token is spent |
+| Wrote successfully | |
+
+But "unspent" is only half the test. **Re-sending the same token also requires an identical
+`request`**, because the fingerprint covers it. So:
+
+- **Reusable**: the blocker was outside the request and cleared on its own - a permission was
+  granted, an object was un-archived, a transient lookup failure passed on retry - and you
+  change **nothing** in the payload.
+- **Not reusable**: fixing the problem means editing the request. Dropping the unauthorized
+  `profileId`, removing the archived id, correcting the route - all change the fingerprint, so
+  the old token is dead even though it was never consumed. **Run Phase 1 again**, and get a
+  fresh yes for the new (smaller) scope.
+
+**The failures the table marks as consumed really are consumed** - fingerprint mismatch, a
+different user, and - on every route **except** those listed under "Rejected before the
+token is consumed" - a **nested item's** `profileId` failing authorization: outside those
+routes that check runs inside the strategy, after the token is spent.
+
+**A confirmation-service outage is the one case with no answer.** Depending on where the
+failure landed the token may or may not have been spent, and the response does not say
+which. Treat its state as unknown: do not re-send it, and re-preview once the service
+recovers.
+
+Never tell the user "the token is still valid": either you are re-sending an unchanged request
+within the TTL, or you are re-previewing.
+
+## Reading the preview
+
+`data.details` shape depends on the route. What matters:
+
+- **`affectedCount` on a conditional route counts only the `archived` items** - not the
+  batch. A batch of 1 archive + 20 pauses previews as 1.
+- `details.batchItemCount` (whole batch) and `details.otherStatusChanges` (the rest) let you
+  report the true scope - **but they exist only on `updateStatus` routes.** Budget, bid and
+  `productAd + archive` previews do not carry them. Do not read them unconditionally.
+- **Always state the full scope in your own words** before asking for confirmation. The
+  user must not be confirming a count that describes part of what will happen.
+- **`campaign` preview rows have no `id` key** - they use `campaignId`. Only
+  `details.otherStatusChanges[]` entries carry `id`.
+
+### `details.items` - the shape varies by route
+
+`details.items[]` is one entry per previewed row, and **its keys differ per route** - there
+is no single schema. Roughly:
+
+| Route | Keys you will see |
+|---|---|
+| `campaign` + `updateAudienceBid` | `index`, `id`, `profileId`, `campaignType`, `audienceId`, `audienceSegmentType`, `audienceBidPercentage` (requested binding and absolute uplift, not queried current values) |
+| `campaign` + `updatePlacementBid` | `index`, `id`, `profileId`, `campaignType`, and whichever placement fields you sent (requested absolute percentages, not queried current values) |
+| `campaign` + `updateBudget` | `index`, `campaignId`, `profileId`, `campaignName`, `currentBudget`, `adjustmentType`, `adjustmentAmount`, `projectedBudget` (+ `warnings` only when non-empty) |
+| `campaign` + `updateStatus` | `index`, `campaignId`, `profileId`, `campaignName`, `campaignType`, `currentState` (always `"unknown"`), `targetState` |
+| `keyword` + `updateBid` | `index`, `id`, `profileId`, `keywordText` (looked up), `matchType` (echoed from your request), `previousBid`, `adjustmentType`, `adjustmentAmount`, `projectedBid` |
+| `target` + `updateBid` | `index`, `id`, `profileId`, `targetText` (looked up), `campaignType`, `previousBid`, `adjustmentType`, `adjustmentAmount`, `projectedBid` - no `matchType` on this route |
+| `keyword` / `target` / `negativeKeyword` / `negativeTarget` + `updateStatus` (archiving) | `index`, `id`, `profileId`, the entity's own text field (`keywordText` / `targetText` / `negativeTargetText`), its type field (`matchType` / `targetMatchType` / `negativeTargetType`), `currentState` (looked up), `targetState` (always `"archived"`). `negativeKeyword` also carries `businessType`; every route except `keyword` also carries `campaignType` |
+| `productAd` + `archive` | `index`, `id`, `profileId`, `campaignType`, `targetState` (always `"archived"`) - built from your request only, no lookup |
+| `portfolio` + `updateBudget` | `index`, `id`, `profileId`, `current`, `submitted`, `defaultSources`, `mayBeSkipped` |
+
+**Do not infer which route a preview came from by looking at its keys**, and do not assume a
+key is present. You know the route because you sent it - carry that context yourself rather
+than re-deriving it from the response.
+
+
+### Budget preview: `currentBudget` means `dailyBudget`
+
+The budget preview emits a field named `currentBudget`, and its value is the campaign's
+**`dailyBudget`**. The `currentBudget` field on a metadata/list row is a *different* number
+and is often `0.00`.
+
+So when reconciling a budget preview against metadata, compare
+`preview.currentBudget` with the campaign's **`dailyBudget`**. Comparing it against
+metadata's `currentBudget` will look like a mismatch when nothing is wrong.
+
+`projectedBudget` is computed from that same `dailyBudget` basis.
+
+### `warnings` is absent when empty
+
+The budget preview omits the `warnings` key entirely when there is nothing to warn about -
+it is not an empty array. Treat missing as empty.
+
+### A null field means the lookup failed, not that the value is empty
+
+Depending on the route, preview enrichment reads **some** of the text, type and state fields
+from the platform - the per-route table above says which. The rest are echoed straight back
+from your request and prove nothing about the live row: `campaignType` and `businessType`
+wherever they appear, and `matchType` on both `keyword` routes (on `negativeKeyword` and
+`target` the type field **is** looked up). Text and `currentState` are always looked up.
+
+**The platform reads fail silently** - on error, no match, or a missing field, you get
+`null` and a server-side log line, not an error. Unlike the archived guard, the preview does
+not fail closed.
+
+- Never present a `null` preview field to the user as the current value.
+- **The bid preview reads no bid at all.** `previousBid` is echoed straight back from your
+  request and `projectedBid` is computed from it. The preview never queries the live bid and
+  never checks your `previousBid` against it, so a preview that looks right is **not**
+  evidence that the baseline is current - re-read the bid immediately before Phase 1.
+- `projectedBid` is `null` only when the request itself lacks a usable `bid.type` /
+  `bid.amount`, or lacks `previousBid` on a relative type - never because a lookup failed.
+  On the keyword and target routes those fields are validated before the preview, so you
+  should not see it there.
+- `campaign + updateStatus` previews always show `currentState: "unknown"` - the underlying
+  query does not return state at all. Do not report it as the campaign's real state; read
+  it with `get_entity_metadata` if the user needs to know.
+
+## Confirmation errors
+
+All four confirmation failures come back as `errorType: business_error`, and the message is
+wrapped by the service layer, e.g.
+`Service [Amazon_SA_Service] returned an error: Confirmation token expired or not found. Generate a new preview first.`
+
+The four, by message:
+
+- `Confirmation token expired or not found. Generate a new preview first.` - the 5-minute
+  TTL ran out
+- `Confirmation token was issued to a different user`
+- `Request parameters changed since preview. Generate a new preview first.` - the payload no
+  longer matches the fingerprint the token was bound to
+- `Confirmation service unavailable; cannot issue token` (Phase 1) or
+  `...; cannot verify token` (Phase 2) - the confirmation service itself is down
+
+**Branch on `errorType`, not on message text.** If you must distinguish them, substring-match
+on `Confirmation token` / `Request parameters changed` / `Confirmation service unavailable`,
+never on a whole sentence.
+
+If the confirmation service itself is unavailable, **no write is executed** - fail-closed.
+What it means depends on the phase: in Phase 1 no token is issued at all
+(`cannot issue token`), while in Phase 2 a token that **was** issued cannot be verified
+(`cannot verify token`). Report it and stop; do not try to write without a token, and do not
+assume a Phase 2 token survived - re-preview once the service recovers.
+
+
+## Running Phase 2 unattended
+
+Only after the user has explicitly waived confirmation - see the SKILL.md section "When the
+user waives confirmation" for what counts as a waiver and what it does not cover.
+
+A waiver removes the approval turn, not the protocol. Phase 1 still returns
+`PENDING_CONFIRMATION` with a token, and Phase 2 is still a second call carrying it. Nothing
+here lets you write in one call.
+
+Unattended, the preview is checked by you instead of by the user. Before sending Phase 2:
+
+**The preview's scope differs by route - check against the right baseline.**
+
+Always-confirm routes (including `campaign + updateBudget`, `portfolio + updateBudget`,
+`keyword + updateBid`, `target + updateBid`, `productAd + archive`, audience and placement
+updates) preview the whole request. Conditional routes
+(the five `updateStatus` routes) preview **only the `archived` items** while Phase 2 executes
+the whole batch, so a batch of 1 archive + 20 pauses correctly previews `1` - comparing that
+against `21` would reject every mixed batch.
+
+| Check | Baseline on always-confirm routes | Baseline on conditional routes |
+|---|---|---|
+| Affected count | every item you sent | only the `archived` items you sent |
+| Object identity | exactly the ids you sent | exactly the `archived` ids you sent |
+| Rest of the batch | n/a - there is no unpreviewed remainder | `details.batchItemCount` / `details.otherStatusChanges` must reconcile with the non-`archived` items; **absent or not adding up -> stop** |
+| Null fields | any `null` other than `campaign + updateStatus`'s `currentState: "unknown"` means the lookup failed -> stop | same |
+
+Any mismatch: stop and ask, waiver or not.
+
+The token rules are unchanged, and unforgiving when nobody is watching the clock: bare UUID,
+**5 minutes**, single use, bound to the previewing user, fingerprint over `entity` + `action`
++ `request`. Send Phase 2 in the same turn - do not do other work in between. If the token
+expired, re-run Phase 1 and re-check; never reuse a stale token or retry blindly.
+
+State what you did after the write, including how many objects actually changed. A waived
+confirmation still leaves a record in the conversation.

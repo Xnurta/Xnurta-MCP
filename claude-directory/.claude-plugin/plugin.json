@@ -1,0 +1,23 @@
+{
+  "name": "xnurta-mcp",
+  "version": "1.4.0",
+  "description": "Amazon Sponsored Ads intelligence for AI agents: query advertising data, manage AI managed groups, create SP/SB/SD campaigns and portfolios, and edit supported live ad entities via Xnurta MCP.",
+  "author": {
+    "name": "Xnurta"
+  },
+  "homepage": "https://github.com/Xnurta/Xnurta-MCP",
+  "repository": "https://github.com/Xnurta/Xnurta-MCP",
+  "license": "MIT",
+  "privacyPolicyUrl": "https://www.xnurta.com/privacy-policy",
+  "keywords": [
+    "amazon-ads",
+    "sponsored-ads",
+    "advertising",
+    "acos",
+    "roas",
+    "campaign",
+    "mcp",
+    "xnurta",
+    "analytics"
+  ]
+}
