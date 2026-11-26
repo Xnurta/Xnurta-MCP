@@ -5,8 +5,11 @@
   "author": {
     "name": "Xnurta"
   },
-  "homepage": "https://github.com/Xnurta/Xnurta-MCP",
+  "homepage": "https://www.xnurta.com/mcp",
   "repository": "https://github.com/Xnurta/Xnurta-MCP",
   "license": "MIT",
-  "privacyPolicyUrl": "https://www.xnurta.com/privacy-policy"
+  "privacyPolicyUrl": "https://www.xnurta.com/privacy-policy",
+  "documentationUrl": "https://doc.xnurta.com/en/",
+  "supportUrl": "https://www.xnurta.com/contact",
+  "termsOfServiceUrl": "https://www.xnurta.com/terms-and-conditions"
 }
