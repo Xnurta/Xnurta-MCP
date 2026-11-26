@@ -2,6 +2,19 @@
 
 This file tracks version changes for Xnurta MCP Skills and the accompanying documentation.
 
+## [Unreleased]
+
+### Changed
+
+- **`xnurta-sqp-insight` `1.0.0` -> `1.0.2`: now MCP-only and read-only.** The local Python scripts are removed; the Skill reads SQP / ABA through `get_market_search_perf` and uses `get_ads_perf` / `get_operation_log` only as context. It diagnoses selected search terms or ASINs (default: the last four complete weeks). **The plan mode is removed** - no bid, budget or top-of-search sizing and no write-ready rows; edits go through the edit Skills as a separate request.
+- **`xnurta-category-scorecard` `1.0.0` -> `1.0.2`: now MCP-only and read-only.** The local Python scripts are removed. It covers one specified category or a confirmed ASIN set: own ad performance plus matched brand peer ranges (P25 / P50 / P75). **Whole-store category scoring and the budget plan are removed.** The 2-by-2 (Scale / Fix ad cost / Fix listing / Fix first) is kept, but only when both axes are verified over the same weeks and scope; the market axis needs `sqp:read`, and without it the rest of the report is still delivered.
+- `xnurta-query-market-data` `1.0.0` -> `1.0.1`: ABA columns come only from weekly `marketSearchQuery` rows (`marketAsinQuery` and aggregated rows carry none), and an empty SQP result is reported as "tenant onboarding status to be confirmed" rather than as no demand.
+- `xnurta-monthly-ads-report` and `xnurta-search-term-diagnosis`: routing text updated to the narrower scope of the two Skills above; versions unchanged.
+- Claude Code plugin: `.mcp.json` now signs in with OAuth instead of reading `XNURTA_TOKEN` - existing plugin users sign in once in the browser after updating. Codex keeps `XNURTA_TOKEN`. To use an MCP Token in Claude Code, configure MCP manually (see the installation guide).
+- `.claude-plugin/plugin.json` declares `license` (MIT), `privacyPolicyUrl`, `homepage` and `repository`; the plugin has an icon (`.claude-plugin/icon.png`).
+- All Skill files use LF line endings, enforced by `.gitattributes`.
+- `xnurta-create-ai-group`, `xnurta-edit-ai-group` and `xnurta-weekly-ads-report`: placeholders such as `+$num` and `$Y` are written without a `$` sign, so they cannot be read as environment variables; versions unchanged.
+
 ## [1.4.0] - 2026-11-24
 
 ### Added

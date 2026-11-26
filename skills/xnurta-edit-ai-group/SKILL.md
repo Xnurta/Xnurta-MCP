@@ -69,7 +69,7 @@ one, and whether it's a **target value** or an **increase**:
   UI. Warn them that editing this group's **total** budget afterwards rescales every enabled
   campaign's daily budget proportionally, which would overwrite that change.
 - **performance (dynamic) budget** (`DYNAMIC_BUDGET`) - the value is an
-  **increase cap on top of the current budget, NOT a target** (fixed `+$num` or `+num%`;
+  **increase cap on top of the current budget, NOT a target** (fixed `+num` in the store currency, or `+num%`;
   e.g. $100 with 20 -> up to $120). **Its scope depends on budget reallocation**: OFF = per enabled
   campaign; ON = whole group (see [`references/coupling-rules.md`](references/coupling-rules.md)).
 - **budget reallocation** (`BUDGET_REDISTRIBUTE`) - a switch that also changes the *scope* of

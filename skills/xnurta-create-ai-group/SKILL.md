@@ -65,7 +65,7 @@ confirm the meaning first, then use the ad-type reference to pick the field.
     single campaign's daily budget cannot be set through the managed-group tools** (it's
     campaign-level - use the platform).
   - **performance (dynamic) budget** is an **increase cap on top of the current budget, NOT a
-    target** (fixed `+$num` or `+num%`); its scope depends on **budget reallocation**
+    target** (fixed `+num` in the store currency, or `+num%`); its scope depends on **budget reallocation**
     (OFF = per enabled campaign; ON = whole group). See
     [`references/coupling-rules.md`](references/coupling-rules.md).
   - **budget reallocation** - a switch that also changes the scope of performance budgeting.

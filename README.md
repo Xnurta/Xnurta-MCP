@@ -174,7 +174,7 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 1. Switch to the **Code** tab.
 2. Select **+ → Plugins → Add plugin** next to the prompt box to open the plugin browser.
 3. Under **Marketplaces**, add a repository and enter `Xnurta/Xnurta-MCP`.
-4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 14 Skills together.
+4. Find and install **Xnurta MCP**. The plugin installs the MCP server and all 21 Skills together.
 
 > Claude Code Desktop does not support the `/plugin` command. `/plugin` is for Claude Code CLI only; use the desktop plugin browser instead.
 
@@ -184,7 +184,7 @@ Per-skill versions are in [skills/manifest.json](skills/manifest.json); version 
 2. Select **Add → Add a marketplace** in the upper-right corner.
 3. Enter `Xnurta/Xnurta-MCP` and add the marketplace.
 4. In **Plugins**, find the marketplace you added and install **Xnurta MCP**.
-5. Start a new Codex task. The MCP server and all 14 Skills will be available in the new task.
+5. Start a new Codex task. The MCP server and all 21 Skills will be available in the new task.
 
 > ChatGPT Desktop Codex does not support `/plugin` or `/plugins`. `/plugins` is for Codex CLI only; use Plugins in the left sidebar of the desktop app.
 
@@ -208,7 +208,7 @@ codex
 
 In Codex CLI, enter `/plugins`, select **Xnurta MCP** from the `xnurta` marketplace, install it, and then start a new session.
 
-The plugin installs the MCP server and all 14 Skills together. The current Plugin configuration uses `XNURTA_TOKEN`. To use OAuth, follow the [OAuth setup](docs/installation.md#oauth) in the installation guide.
+The plugin installs the MCP server and all 21 Skills together. In Claude Code the plugin signs in with OAuth: the first time a tool is used, it opens the Xnurta sign-in page. In Codex the plugin reads the Token from `XNURTA_TOKEN`. To use an MCP Token in Claude Code, configure MCP manually as described in the [MCP Token setup](docs/installation.md#mcp-token).
 
 ### Generic MCP clients
 
@@ -232,6 +232,6 @@ This repository is also a cross-platform plugin distribution package for Claude 
 | [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) | Claude Code plugin descriptor |
 | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) | Codex marketplace catalog |
 | [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) | Codex plugin descriptor |
-| [`.mcp.json`](.mcp.json) | Claude Code MCP server configuration using `${XNURTA_TOKEN}` |
+| [`.mcp.json`](.mcp.json) | Claude Code MCP server configuration (OAuth sign-in) |
 | [`docs/installation.md`](docs/installation.md) | Detailed installation and troubleshooting guide |
 | [`skills/manifest.json`](skills/manifest.json) | Machine-readable Skills catalog |

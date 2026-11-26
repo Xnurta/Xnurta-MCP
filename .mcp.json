@@ -2,10 +2,7 @@
   "mcpServers": {
     "xnurta-mcp": {
       "type": "http",
-      "url": "https://mcp.xnurta.com/mcp",
-      "headers": {
-        "Authorization": "Bearer ${XNURTA_TOKEN}"
-      }
+      "url": "https://mcp.xnurta.com/mcp"
     }
   }
 }
